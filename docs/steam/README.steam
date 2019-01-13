@@ -1,0 +1,46 @@
+[h1][b]Hide Scenery[/b][/h1]
+
+Select certain scenery or paths to hide, instead of just hide all scenery like Parkitects builtin functionality does.
+
+
+[b]Note[/b]: The full readme with a more detailed description, images, installation description for non-steam versions and additional notes is on [url=https://github.com/Craxy/Parkitect-HideScenery]the GitHub page of this mod[/url].
+
+[h1]Usage[/h1]
+[list]
+  [*] Enable/Disable Hide Scenery: [i].[/i] (Period)
+  [*] Select none: [i]Keypad7[/i] 
+  [*] Toggle individual selection: [i]Keypad8[/i]
+    [*] Change selected hidden object: [i]+[/i]/[i]-[/i]
+  [*] Toggle box selection: [i]Keypad9[/i]
+  [*] Clear hidden objects: [i]Keypad3[/i]
+[/list]
+Both individual as well as box selection can be exited via [i]Esc[/i] too (just like every other tool in Parkitect).
+
+
+All shortcuts can be changed in the Settings menu under Controls in the "Hide Scenery" section. This section is only available in a Park and not in the Main Menu. An exception is [i]+/-[/i]: These correspond to the Parkitect for "Increase/Decrease object size".
+
+
+
+[h1]Additional References[/h1]
+[quote]
+[h1]Release Notes[/h1]
+
+Listed in [url=https://github.com/Craxy/Parkitect-HideScenery/RELEASE_NOTES.md]on GitHub[/url] and on the [url=https://github.com/Craxy/Parkitect-HideScenery/releases]GitHub release page[/url].  
+A simplified changelog can also be found [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1624906296]on the Change Notes page on the Steam Workshop page[/url] for this mod.
+[/quote]
+[quote]
+[h1]Issues[/h1]
+
+Please report issues via the [url=https://github.com/Craxy/Parkitect-HideScenery/issues]issue tracker on GitHub[/url].  
+If this mod is responsible for a crash or an error/exception please include your [i]output_log.txt[/i]. Copy this log file immediately after the crash -- its content is cleared for each Parkitect start.  
+
+[i]output_log.txt[/i] is Parkitects log file, located at 
+* Windows: %USERPROFILE%\AppData\LocalLow\Texel Raptor\Parkitect\output_log.txt
+* Linux: ~/.config/unity3d/Texel Raptor/Parkitect/Player.log
+* Mac: ~/Library/Logs/Unity/Player.log
+[/quote]
+[quote]
+[h1]Source code[/h1]
+
+[url=https://github.com/Craxy/Parkitect-HideScenery]Craxy/Parkitect-HideScenery on GitHub[/url]  
+[/quote]
