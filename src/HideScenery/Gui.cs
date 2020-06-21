@@ -17,7 +17,7 @@ namespace Craxy.Parkitect.HideScenery
   sealed class Gui
   {
     private const float width = 270.0f;
-    private const float contractedHeight = 125.0f;
+    private const float contractedHeight = 130.0f;
     private const float expandedHeight = 450.0f;
     private const float right = 10.0f;
     private const float top = 75.0f;
