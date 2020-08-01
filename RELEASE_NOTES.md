@@ -1,4 +1,4 @@
-#### 1.0.0 - 2020-08-01
+#### 1.0.1 - 2020-08-01
 Tested with Parkitect *1.5j*
 * Fix: Cannot find `Input`
        -> was moved into `UnityEngine.InputLegacyModule`
