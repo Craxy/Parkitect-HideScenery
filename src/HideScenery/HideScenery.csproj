@@ -218,8 +218,11 @@
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.Analytics.StandardEvents.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.MemoryProfiler">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.MemoryProfiler.dll</HintPath>
+    <Reference Include="Unity.Analytics.Tracker">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.Analytics.Tracker.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Formats.Fbx.Runtime">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.Formats.Fbx.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Postprocessing.Runtime">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.Postprocessing.Runtime.dll</HintPath>
@@ -227,11 +230,17 @@
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.Timeline.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AccessibilityModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AndroidJNIModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
@@ -244,9 +253,6 @@
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.BaselibModule">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.BaselibModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClothModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
@@ -272,8 +278,8 @@
     <Reference Include="UnityEngine">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.FileSystemHttpModule">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.FileSystemHttpModule.dll</HintPath>
+    <Reference Include="UnityEngine.DSPGraphModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
@@ -290,6 +296,9 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.InputModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.InputModule.dll</HintPath>
     </Reference>
@@ -298,9 +307,6 @@
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.Networking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
@@ -323,9 +329,6 @@
     <Reference Include="UnityEngine.SharedInternalsModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.SpatialTracking">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SpatialTracking.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
     </Reference>
@@ -335,11 +338,11 @@
     <Reference Include="UnityEngine.StreamingModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.StyleSheetsModule">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.StyleSheetsModule.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.SubstanceModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubsystemsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
@@ -355,12 +358,6 @@
     </Reference>
     <Reference Include="UnityEngine.TilemapModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Timeline">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TimelineModule">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TimelineModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TLSModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
@@ -421,9 +418,6 @@
     </Reference>
     <Reference Include="UnityEngine.XRModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.XRModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityFbxPrefab">
-      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityFbxPrefab.dll</HintPath>
     </Reference>
   </ItemGroup>
 
