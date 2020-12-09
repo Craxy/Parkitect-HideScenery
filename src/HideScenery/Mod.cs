@@ -6,23 +6,15 @@ using UnityEngine;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  public sealed class Mod : IMod
+  public sealed class Mod : AbstractMod
   {
-    public string Name => name;
-    public string Description => description;
-    public string Identifier => identifier;
-
-    internal static readonly string name, description, identifier;
+    internal static readonly string name, description, identifier, version;
 
     static Mod()
     {
       var assembly = Assembly.GetExecutingAssembly();
 
-      var meta =
-          assembly.GetCustomAttributes(typeof(AssemblyMetadataAttribute), false)
-          .Cast<AssemblyMetadataAttribute>()
-          .Single(a => a.Key == "Identifier");
-      identifier = meta.Value;
+      identifier = assembly.GetName().Name;
 
       T GetAssemblyAttribute<T>() where T : Attribute => (T)assembly.GetCustomAttribute(typeof(T));
 
@@ -32,6 +24,8 @@ namespace Craxy.Parkitect.HideScenery
 #endif
       ;
       description = GetAssemblyAttribute<AssemblyDescriptionAttribute>().Description;
+
+      version = assembly.GetName().Version.ToString();
     }
 
     public static void Log(string msg)
@@ -42,12 +36,12 @@ namespace Craxy.Parkitect.HideScenery
     public static void DebugLog(string msg) => Log(msg);
 
     private GameObject go;
-    public void onEnabled()
+    public override void onEnabled()
     {
       if(GameController.Instance == null)
       {
         Mod.Log("onEnable but no GameController -> ignore");
-        var mod = ModManager.Instance.getModEntries().SingleOrDefault(me => me.mod.Identifier == this.Identifier);
+        var mod = ModManager.Instance.getModEntries().SingleOrDefault(me => me.mod.getIdentifier() == this.getIdentifier());
         if(mod != null)
         {
           mod.disableMod();
@@ -60,7 +54,7 @@ namespace Craxy.Parkitect.HideScenery
       go.AddComponent<HideSceneryHandler>();
       KeyHandler.RegisterKeys();
     }
-    public void onDisabled()
+    public override void onDisabled()
     {
       if(GameController.Instance == null)
       {
@@ -74,6 +68,12 @@ namespace Craxy.Parkitect.HideScenery
       go = null;
     }
 
+    public override string getName() => name;
+    public override string getDescription() => description;
+    public override string getVersionNumber() => version;
+    public override string getIdentifier() => identifier;
 
+    public override bool isMultiplayerModeCompatible() => true;
+    public override bool isRequiredByAllPlayersInMultiplayerMode() => false;
   }
 }

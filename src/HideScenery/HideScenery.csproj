@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <!-- <TargetFramework>net4</TargetFramework> -->
     <LangVersion>latest</LangVersion>
     <RootNamespace>Craxy.Parkitect.HideScenery</RootNamespace>
   </PropertyGroup>
@@ -10,7 +11,7 @@
     <!-- Used as identifier in parkitect (-> IMod.Identifier) -->
     <Identifier>Craxy@HideScenery</Identifier>
     <!-- Version of this mod. Used as AssemblyVersion and FileVersion-->
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
     <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
     <Name>Hide Scenery</Name>
     <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->
@@ -422,18 +423,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILRepack" Version="2.0.16" />
-    <PackageReference Include="Lib.Harmony" Version="1.2.0.1" />
+    <PackageReference Include="ILRepack" Version="2.0.18" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.4" />
   </ItemGroup>
-
-  <ItemGroup>
-    <!-- Source: https://stuartlang.uk/adding-assemblymetadataattribute-using-new-sdk-project-with-msbuild/ -->
-    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <_Parameter1>Identifier</_Parameter1>
-      <_Parameter2>$(Identifier)</_Parameter2>
-    </AssemblyAttribute>
-  </ItemGroup>
-
 
   <PropertyGroup>
     <ModDir>$(ParkitectUserPath)\Mods\$(FolderName)</ModDir>
@@ -454,10 +446,7 @@
     <MakeDir Directories="$(ModDir)" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/$(TargetFileName)" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../../docs/files/img/preview.png" DestinationFolder="$(ModDir)" />
-    <WriteLinesToFile
-      File="$(ModDir)/steam_workshop-id"
-      Lines="$(SteamWorkshopId)"
-      />
+    <WriteLinesToFile File="$(ModDir)/steam_workshop-id" Lines="$(SteamWorkshopId)" />
   </Target>
   <Target Name="StartParkitect" AfterTargets="CopyToModDir" Condition="'$(StartParkitect)' == 'true'">
     <Exec Condition="'$(UseSteam)' != 'true'" Command="&quot;$(ParkitectPath)/Parkitect&quot;" />

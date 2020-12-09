@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Craxy.Parkitect.HideScenery.Selection;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Craxy.Parkitect.HideScenery
@@ -25,7 +25,7 @@ namespace Craxy.Parkitect.HideScenery
     private Injector() { }
 
     private readonly List<MethodPatch> patches = new List<MethodPatch>();
-    private HarmonyInstance harmony = null;
+    private Harmony harmony = null;
     private void InitializePatches()
     {
       if (harmony != null)
@@ -34,7 +34,7 @@ namespace Craxy.Parkitect.HideScenery
       }
 
       var id = typeof(Mod).Namespace;
-      harmony = HarmonyInstance.Create(id);
+      harmony = new Harmony(id);
 
       // deco
       {
@@ -86,7 +86,7 @@ namespace Craxy.Parkitect.HideScenery
       public static MethodPatch Create(MethodInfo original, MethodInfo prefix)
         => new MethodPatch(original, new HarmonyMethod(prefix));
 
-      public void Apply(HarmonyInstance harmony)
+      public void Apply(Harmony harmony)
       {
         if (IsPatched)
         {
@@ -95,7 +95,7 @@ namespace Craxy.Parkitect.HideScenery
 
         Patch = harmony.Patch(Original, Prefix);
       }
-      public void Remove(HarmonyInstance harmony)
+      public void Remove(Harmony harmony)
       {
         if (!IsPatched)
         {
