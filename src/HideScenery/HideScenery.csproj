@@ -423,7 +423,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILRepack" Version="2.0.18" />
     <PackageReference Include="Lib.Harmony" Version="2.0.4" />
   </ItemGroup>
 
@@ -444,7 +443,7 @@
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/00$(TargetFileName)" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../../docs/files/img/preview.png" DestinationFolder="$(ModDir)" />
     <WriteLinesToFile File="$(ModDir)/steam_workshop-id" Lines="$(SteamWorkshopId)" />
-    <Copy SourceFiles="$(TargetDir)/0Harmony.dll" DestinationFolder="$(ModDir)"/>
+    <Copy SourceFiles="$(TargetDir)/0Harmony.dll" DestinationFolder="$(ModDir)" />
   </Target>
   <Target Name="StartParkitect" AfterTargets="CopyToModDir" Condition="'$(StartParkitect)' == 'true'">
     <Exec Condition="'$(UseSteam)' != 'true'" Command="&quot;$(ParkitectPath)/Parkitect&quot;" />
