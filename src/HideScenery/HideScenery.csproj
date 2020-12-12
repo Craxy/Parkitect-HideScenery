@@ -436,17 +436,15 @@
     <Product>$(Name)</Product>
   </PropertyGroup>
   
-  <Target Name="MergeHarmony" AfterTargets="PostBuildEvent">
-    <Exec Command="$(ILRepack) /lib:$(TargetDir) /out:$(TargetPath) $(TargetPath) $(TargetDir)/0Harmony.dll" />
-  </Target>
-  
-  <Target Name="CopyToModDir" AfterTargets="MergeHarmony">
+  <Target Name="CopyToModDir" AfterTargets="PostBuildEvent">
     <Message Importance="high" Text="Copy mod files to '$(ModDir)'" />
     <RemoveDir Directories="$(ModDir)" />
     <MakeDir Directories="$(ModDir)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/$(TargetFileName)" />
+    <!-- First dll is searched for mod -> preprend `00` to be infront of `0Harmony.dll` -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/00$(TargetFileName)" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../../docs/files/img/preview.png" DestinationFolder="$(ModDir)" />
     <WriteLinesToFile File="$(ModDir)/steam_workshop-id" Lines="$(SteamWorkshopId)" />
+    <Copy SourceFiles="$(TargetDir)/0Harmony.dll" DestinationFolder="$(ModDir)"/>
   </Target>
   <Target Name="StartParkitect" AfterTargets="CopyToModDir" Condition="'$(StartParkitect)' == 'true'">
     <Exec Condition="'$(UseSteam)' != 'true'" Command="&quot;$(ParkitectPath)/Parkitect&quot;" />
