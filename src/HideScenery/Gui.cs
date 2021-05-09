@@ -36,10 +36,38 @@ namespace Craxy.Parkitect.HideScenery
     }
 
     public bool Expanded = true;
+    public bool TuckedAway = false;
     private Vector2 scrollPosition = Vector2.zero;
 
     public void Show(Handler hs)
     {
+      // about arrows: 
+      // use ←↑→↓ instead of ⇐⇑⇒⇓ because double arrows are rendered inconsistently
+
+      if(TuckedAway)
+      {
+        const float w = (padding * 2) + 35.0f;
+        const float h = w;
+        using(Layout.Area(new Rect(Screen.width - right - w, top, w, h)))
+        {
+          GUI.Box(new Rect(0.0f, 0.0f, w, h), backgroundTexture);
+          using (Layout.Area(new Rect(padding, padding, w - (2 * padding), h - (2 * padding))))
+          {
+            Space(7.0f);
+            using(Layout.Horizontal())
+            {
+              FlexibleSpace();
+              if(!Toggle(true, "<b>←</b>")) {
+                TuckedAway = false;
+              }
+              Space(5.0f);
+            }
+          }
+        }
+        return;
+      }
+
+
       var expanded = Expanded;
       var height = expanded ? expandedHeight : contractedHeight;
 
@@ -52,7 +80,7 @@ namespace Craxy.Parkitect.HideScenery
           {
             // Always visible
             {
-              Space(10.0f);
+              Space(7.0f);
               ShowHeader(0.0f, hs);
               ShowTransparency(0.0f, hs);
               ShowToggleMode(0.0f, hs);
@@ -89,8 +117,10 @@ namespace Craxy.Parkitect.HideScenery
       {
         Label("<b>Hide Scenery</b>");
         FlexibleSpace();
-        Expanded = Toggle(Expanded, Expanded ? "⇑" : "⇓");
-        Space(10.0f);
+        Expanded = Toggle(Expanded, Expanded ? "<b>↑</b>" : "<b>↓</b>");
+        Space(5.0f);
+        TuckedAway = Toggle(false, "<b>→</b>");
+        Space(3.0f);
       }
     }
     private static void ShowTransparency(float indentation, Handler hs)
