@@ -45,6 +45,7 @@ This mod doesn't alter savegames -> You can disable and remove this mod at any t
 All shortcuts can be changed in the Settings menu under Controls in the "Hide Scenery" section. This section is only available in a Park and not in the Main Menu.
 
 * Enable/Disable Hide Scenery: `.`
+  * without GUI: `,`
 * Select `none`: `Keypad7`
 * Toggle `individual` selection: `Keypad8`
   * Change selected hidden object: `+`/`-` (Parkitect keys for "Increase/Decrease object size")
