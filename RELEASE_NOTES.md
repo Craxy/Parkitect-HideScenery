@@ -1,4 +1,12 @@
-#### 1.0.4- 2021-05-09
+#### 1.2.0- 2021-05-12
+Tested with Parkitect 1.7t
+* Add: Enable tool without GUI
+   * Default Key: `Comma`
+   * Changing between GUI & no GUI: with their shortcuts (defaults: `Period` & `Comma`)
+   * Selection Tool can be changed with their shortcuts (defaults: Keypad 7-9, 3 (clear))
+   * Note: There's a tiny `HS` in the upper right corner when Hide Scenery without GUI is enabled. Otherwise when no scenery to hide is selected & no tool active: looks just the same as Mod not active.
+
+#### 1.1.0- 2021-05-09
 Tested with Parkitect 1.7t
 * Add tiny gui state
 
