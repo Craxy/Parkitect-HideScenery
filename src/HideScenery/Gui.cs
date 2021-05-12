@@ -39,35 +39,47 @@ namespace Craxy.Parkitect.HideScenery
     public bool TuckedAway = false;
     private Vector2 scrollPosition = Vector2.zero;
 
-    public void Show(Handler hs)
+    internal void ShowIndicator()
+    {
+      var c = new GUIContent("<size=8><color=brown><b>HS</b></color></size>");
+      var size = GUI.skin.label.CalcSize(c);
+      var pos = new Rect(Screen.width - 1.0f - size.x, -8.0f, size.x, size.y);
+      GUI.Label(pos, c);
+    }
+    private void ShowTuckedAway()
     {
       // about arrows: 
       // use ←↑→↓ instead of ⇐⇑⇒⇓ because double arrows are rendered inconsistently
+      var c = new GUIContent("<b>←</b>");
+      var size = GUI.skin.toggle.CalcSize(c);
 
-      if(TuckedAway)
+      const float dp = padding * 2.0f;
+      const float innerLeft = 5.0f, innerRight = 7.0f;
+      const float innerTop = 7.0f, innerBottom = 5.0f;
+
+      var innerWidth = size.x + innerLeft + innerRight;
+      var innerHeight = size.y + innerTop + innerBottom;
+
+      using(Layout.Area(new Rect(Screen.width - right - innerWidth - dp, top, innerWidth + dp, innerHeight + dp)))
       {
-        const float w = (padding * 2) + 35.0f;
-        const float h = w;
-        using(Layout.Area(new Rect(Screen.width - right - w, top, w, h)))
+        GUI.Box(new Rect(0.0f, 0.0f, innerWidth + dp, innerHeight + dp), backgroundTexture);
+        using(Layout.Area(new Rect(padding, padding, innerWidth, innerHeight)))
         {
-          GUI.Box(new Rect(0.0f, 0.0f, w, h), backgroundTexture);
-          using (Layout.Area(new Rect(padding, padding, w - (2 * padding), h - (2 * padding))))
+          Space(innerTop);
+          using(Layout.Horizontal())
           {
-            Space(7.0f);
-            using(Layout.Horizontal())
-            {
-              FlexibleSpace();
-              if(!Toggle(true, "<b>←</b>")) {
-                TuckedAway = false;
-              }
-              Space(5.0f);
+            Space(innerLeft);
+            if(!Toggle(true, c)) {
+              TuckedAway = false;
             }
+            Space(innerRight);
           }
+          Space(innerBottom);
         }
-        return;
       }
-
-
+    }
+    private void ShowFull(Handler hs)
+    {
       var expanded = Expanded;
       var height = expanded ? expandedHeight : contractedHeight;
 
@@ -108,6 +120,17 @@ namespace Craxy.Parkitect.HideScenery
             EndScrollView();
           }
         }
+      }
+    }
+    public void Show(Handler hs)
+    {
+      if(TuckedAway)
+      {
+        ShowTuckedAway();
+      }
+      else
+      {
+        ShowFull(hs);
       }
     }
 

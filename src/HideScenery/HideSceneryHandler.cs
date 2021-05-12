@@ -11,6 +11,11 @@ namespace Craxy.Parkitect.HideScenery
       get => selectionHandler.enabled;
       set => selectionHandler.enabled = value;
     }
+    private bool GuiEnabled
+    {
+      get => selectionHandler.ShowGui;
+      set => selectionHandler.ShowGui = value;
+    }
     void Awake()
     {
       selectionHandler = gameObject.AddComponent<HideScenerySelectionHandler>();
@@ -52,17 +57,34 @@ namespace Craxy.Parkitect.HideScenery
           options.Mode = mode;
         }
       }
-
-      if (InputManager.getKeyDown(KeyHandler.ToggleHideSceneryKey.keyIdentifier))
+      void ToggleEnabled(bool withGui)
       {
-        if (SelectionHandlerEnabled)
+        // switch gui mode, if already same gui: toggle enabled
+        if(SelectionHandlerEnabled)
         {
-          DisableSelectionHandler();
+          if(GuiEnabled == withGui)
+          {
+            DisableSelectionHandler();
+          }
+          else
+          {
+            GuiEnabled = withGui;
+          }
         }
         else
         {
+          GuiEnabled = withGui;
           EnableSelectionHandler();
         }
+      }
+
+      if (InputManager.getKeyDown(KeyHandler.ToggleHideSceneryKey.keyIdentifier))
+      {
+        ToggleEnabled(withGui: true);
+      }
+      else if(InputManager.getKeyDown(KeyHandler.ToggleHideSceneryNoGuiKey.keyIdentifier)) 
+      {
+        ToggleEnabled(withGui: false);
       }
       else if(InputManager.getKeyDown(KeyHandler.ToggleNoneSelectionKey.keyIdentifier))
       {

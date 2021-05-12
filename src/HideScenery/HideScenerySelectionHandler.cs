@@ -16,6 +16,7 @@ namespace Craxy.Parkitect.HideScenery
     public readonly Options Options = new Options();
     private readonly Gui gui = new Gui();
     private Park park;
+    public bool ShowGui = true;
 
 
     void Awake()
@@ -42,7 +43,14 @@ namespace Craxy.Parkitect.HideScenery
     }
     void OnGUI()
     {
-      gui.Show(this);
+      if(ShowGui)
+      {
+        gui.Show(this);
+      }
+      else
+      {
+        gui.ShowIndicator();
+      }
     }
     void OnDisable()
     {

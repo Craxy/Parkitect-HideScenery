@@ -17,7 +17,16 @@ namespace Craxy.Parkitect.HideScenery
       KeyCode.None
       )
     {
-      keyName = "Toggle Hide Scenery",
+      keyName = "Toggle Hide Scenery (with GUI)",
+      keyDescription = "",
+    };
+    public static readonly KeyMapping ToggleHideSceneryNoGuiKey = new KeyMapping(
+        Name("ToggleHideSceneryNoGui"),
+        KeyCode.Comma,
+        KeyCode.None
+      )
+    {
+      keyName = "Toggle Hide Scenery (no GUI)",
       keyDescription = "",
     };
 
@@ -74,6 +83,7 @@ namespace Craxy.Parkitect.HideScenery
       }
 
       registerKey(ToggleHideSceneryKey);
+      registerKey(ToggleHideSceneryNoGuiKey);
       registerKey(ToggleNoneSelectionKey);
       registerKey(ToggleIndividualSelectionKey);
       registerKey(ToggleBoxSelectionKey);
@@ -83,6 +93,7 @@ namespace Craxy.Parkitect.HideScenery
     {
       var im = InputManager.Instance;
       im.unregisterKeyMapping(ToggleHideSceneryKey);
+      im.unregisterKeyMapping(ToggleHideSceneryNoGuiKey);
       im.unregisterKeyMapping(ToggleNoneSelectionKey);
       im.unregisterKeyMapping(ToggleIndividualSelectionKey);
       im.unregisterKeyMapping(ToggleBoxSelectionKey);
