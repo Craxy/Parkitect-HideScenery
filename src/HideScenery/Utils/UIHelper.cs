@@ -9,14 +9,14 @@ namespace Craxy.Parkitect.HideScenery.Utils
   {
     //abusing IDisposable......
 
-    private static readonly Layout _horizontal = new Layout(GUILayout.EndHorizontal);
+    private static readonly Layout _horizontal = new(GUILayout.EndHorizontal);
     public static Layout Horizontal()
     {
       GUILayout.BeginHorizontal();
       return _horizontal;
     }
 
-    private static readonly Layout _vertical = new Layout(GUILayout.EndVertical);
+    private static readonly Layout _vertical = new(GUILayout.EndVertical);
     public static Layout Vertical()
     {
       GUILayout.BeginVertical();
@@ -33,16 +33,16 @@ namespace Craxy.Parkitect.HideScenery.Utils
       return l;
     }
 
-    private static readonly Layout _area = new Layout(GUILayout.EndArea);
+    private static readonly Layout _area = new(GUILayout.EndArea);
     public static Layout Area(Rect rect)
     {
       GUILayout.BeginArea(rect);
       return _area;
     }
 
-    private static readonly Layout _doNothing = new Layout(() => {});
-    private static readonly Layout _disableGuiEnd = new Layout(() => GUI.enabled = false);
-    private static readonly Layout _enableGuiEnd = new Layout(() => GUI.enabled = true);
+    private static readonly Layout _doNothing = new(() => {});
+    private static readonly Layout _disableGuiEnd = new(() => GUI.enabled = false);
+    private static readonly Layout _enableGuiEnd = new(() => GUI.enabled = true);
     public static Layout GuiEnabled(bool value)
     {
       if(GUI.enabled == value)
@@ -75,7 +75,7 @@ namespace Craxy.Parkitect.HideScenery.Utils
 
   public static class UIControl
   {
-    private static readonly Dictionary<int, GUIContent> cachedContents = new Dictionary<int, GUIContent>();
+    private static readonly Dictionary<int, GUIContent> cachedContents = new();
     public static GUIContent CachedContent(string text, string tooltip)
     {
       var hash = (tooltip.GetHashCode() * 17) + text.GetHashCode();
@@ -124,7 +124,7 @@ namespace Craxy.Parkitect.HideScenery.Utils
       }
       return _checkBoxStyle;
     }
-    private static readonly Dictionary<int, (string, string)> checkBoxCache = new Dictionary<int, (string, string)>();
+    private static readonly Dictionary<int, (string, string)> checkBoxCache = new();
     public static bool CachedCheckBox(bool value, string text, string checkMark, string uncheckedMark, int id, params GUILayoutOption[] options)
     {
       string CreateText(bool value) => value ? $"{checkMark} {text}" : $"{uncheckedMark} {text}";

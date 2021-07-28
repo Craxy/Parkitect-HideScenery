@@ -4,7 +4,7 @@ using Craxy.Parkitect.HideScenery.Selection;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  sealed class Options
+  internal sealed class Options
   {
     public float Transparency
     {
@@ -33,16 +33,16 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    public readonly BoxOptions BoxOptions = new BoxOptions();
+    public readonly BoxOptions BoxOptions = new();
 
-    public readonly HideAboveHeightOptions HideAboveHeightOptions = new HideAboveHeightOptions();
+    public readonly HideAboveHeightOptions HideAboveHeightOptions = new();
 
     public delegate void PropertyChanged(Options options, string property);
     public event PropertyChanged Changed;
     private void OnPropertyChanged([CallerMemberName]string property = "") => Changed?.Invoke(this, property);
   }
   [Flags]
-  enum SceneryType
+  internal enum SceneryType
   {
     Roof = 1 << 0,
     Wall = 1 << 1,
@@ -50,43 +50,43 @@ namespace Craxy.Parkitect.HideScenery
     All = ~0,
   }
   [Flags]
-  enum HideType
+  internal enum HideType
   {
     Name = 1 << 0,
     Category = 1 << 1,
     Class = 1 << 2,
     All = ~0,
   }
-  static class TypeExtensions
+  internal static class TypeExtensions
   {
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasSet(this SceneryType value, SceneryType flag)
       => (value & flag) == flag;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasSet(this HideType value, HideType flag)
       => (value & flag) == flag;
 
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SceneryType Add(this SceneryType value, SceneryType flag)
       => value | flag;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HideType Add(this HideType value, HideType flag)
       => value | flag;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SceneryType Remove(this SceneryType value, SceneryType flag)
       => value & ~flag;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HideType Remove(this HideType value, HideType flag)
       => value & ~flag;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SceneryType Set(this SceneryType value, SceneryType flag, bool enabled)
       => enabled ? value | flag : value & ~flag;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HideType Set(this HideType value, HideType flag, bool enabled)
       => enabled ? value | flag : value & ~flag;
   }
 
-  abstract class AdvancedOptions
+  internal abstract class AdvancedOptions
   {
     public bool ApplyFiltersOnAddOnly = true;
 
@@ -94,10 +94,12 @@ namespace Craxy.Parkitect.HideScenery
     public bool HideScenery = true;
 
     public SceneryType SceneryToHide = SceneryType.All;
-    public RoofOptions RoofOptions = new RoofOptions {
+    public RoofOptions RoofOptions = new()
+    {
       HideBy = HideType.All,
     };
-    public WallOptions WallOptions = new WallOptions {
+    public WallOptions WallOptions = new()
+    {
       HideBy = HideType.All,
       OnlyMatchExactlyInBounds = true,
       HideOnlyFacingCurrentView = false,
@@ -105,13 +107,13 @@ namespace Craxy.Parkitect.HideScenery
     };
   }
 
-  sealed class BoxOptions : AdvancedOptions {}
+  internal sealed class BoxOptions : AdvancedOptions {}
 
-  sealed class RoofOptions
+  internal sealed class RoofOptions
   {
     public HideType HideBy = HideType.All;  // cannot be class
   }
-  sealed class WallOptions
+  internal sealed class WallOptions
   {
     public HideType HideBy = HideType.All;
     public bool OnlyMatchExactlyInBounds = false;
@@ -119,7 +121,7 @@ namespace Craxy.Parkitect.HideScenery
     public bool UpdateNotFacingCurrentView = true;
   }
 
-  sealed class HideAboveHeightOptions : AdvancedOptions
+  internal sealed class HideAboveHeightOptions : AdvancedOptions
   {
     public float Height = 4.1f;
   }

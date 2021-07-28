@@ -2,24 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Craxy.Parkitect.HideScenery.Selection;
-using Craxy.Parkitect.HideScenery.Utils;
 using UnityEngine;
-using static UnityEngine.GUILayout;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  sealed class HideScenerySelectionHandler : MonoBehaviour
+  internal sealed class HideScenerySelectionHandler : MonoBehaviour
   {
-    private readonly CustomSelectionTool tool = new CustomSelectionTool();
+    private readonly CustomSelectionTool tool = new();
     internal Calc calc;
     public int NumberOfHiddenObjects => tool.NumberOfSelectedObjects;
-    public readonly Options Options = new Options();
-    private readonly Gui gui = new Gui();
+    public readonly Options Options = new();
+    private readonly Gui gui = new();
     private Park park;
     public bool ShowGui = true;
 
-
-    void Awake()
+    private void Awake()
     {
       park = GameController.Instance.park;
 
@@ -28,10 +25,10 @@ namespace Craxy.Parkitect.HideScenery
       tool.OnRemovedSelectedObject += OnRemovedSelectedObject;
       tool.OnRemoved += OnToolDisabled;
       tool.DeselectOnRemove = false;
-      
+
       calc = new Calc(this);
     }
-    void OnEnable()
+    private void OnEnable()
     {
       foreach (var o in tool.GetSelectedObjects())
       {
@@ -41,7 +38,7 @@ namespace Craxy.Parkitect.HideScenery
       tool.CalcIndividualVisibility = calc.BuildableObjectVisibility;
       tool.CalcBoxAction = calc.BoxAction;
     }
-    void OnGUI()
+    private void OnGUI()
     {
       if(ShowGui)
       {
@@ -52,7 +49,7 @@ namespace Craxy.Parkitect.HideScenery
         gui.ShowIndicator();
       }
     }
-    void OnDisable()
+    private void OnDisable()
     {
       GameController.Instance.removeMouseTool(tool);
 
@@ -64,13 +61,13 @@ namespace Craxy.Parkitect.HideScenery
         OnRemovedSelectedObject(o);
       }
     }
-    void OnDestroy()
+    private void OnDestroy()
     {
       Options.Changed -= OnOptionsChanged;
       tool.OnAddedSelectedObject -= OnAddedSelectedObject;
       tool.OnRemovedSelectedObject -= OnRemovedSelectedObject;
       tool.OnRemoved -= OnToolDisabled;
-      
+
       park = null;
       calc = null;
     }
@@ -91,8 +88,8 @@ namespace Craxy.Parkitect.HideScenery
           break;
       }
     }
-    
-    void ApplyMode()
+
+    private void ApplyMode()
     {
       Mod.Log($"Apply mode {Options.Mode}");
       switch(Options.Mode)
@@ -128,7 +125,7 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
     public const string HideSceneryTag = "HideSceneryObject";
-    private readonly List<SerializedMonoBehaviour> isHiddenBuffer = new List<SerializedMonoBehaviour>();
+    private readonly List<SerializedMonoBehaviour> isHiddenBuffer = new();
     public bool IsHidden(BuildableObject o)
     {
       o.retrieveObjectsBelongingToThis(isHiddenBuffer);
@@ -143,7 +140,7 @@ namespace Craxy.Parkitect.HideScenery
       return true;
     }
 
-    void UpdateTransparency()
+    private void UpdateTransparency()
     {
       // from Park.updateSeeThroughObjectsMaterialAlpha
       var color = HighlightMaterial.color;
@@ -151,14 +148,14 @@ namespace Craxy.Parkitect.HideScenery
       HighlightMaterial.color = color;
     }
 
-    private readonly List<SerializedMonoBehaviour> selectedObjectBuffer = new List<SerializedMonoBehaviour>();
-    void OnAddedSelectedObject(BuildableObject o)
+    private readonly List<SerializedMonoBehaviour> selectedObjectBuffer = new();
+    private void OnAddedSelectedObject(BuildableObject o)
     {
       if(o == null)
       {
         return;
       }
-      
+
       Mod.DebugLog($"OnAdd: {o.GetType().Name} -- {o.getName()}");
 
       o.retrieveObjectsBelongingToThis(selectedObjectBuffer);
@@ -168,13 +165,13 @@ namespace Craxy.Parkitect.HideScenery
       }
       selectedObjectBuffer.Clear();
     }
-    void OnRemovedSelectedObject(BuildableObject o)
+    private void OnRemovedSelectedObject(BuildableObject o)
     {
       if(o == null)
       {
         return;
       }
-      
+
       Mod.DebugLog($"OnRemove: {o.GetType().Name} -- {o.getName()}");
       o.retrieveObjectsBelongingToThis(selectedObjectBuffer);
       foreach (var c in selectedObjectBuffer)
@@ -184,29 +181,29 @@ namespace Craxy.Parkitect.HideScenery
       selectedObjectBuffer.Clear();
     }
     public void DeselectAll() => tool.DeselectAll();
-    
-    void Update()
+
+    private void Update()
     {
       if(GameController.Instance.isActiveMouseTool(tool))
       {
         tool.tick();
       }
     }
-    
-    Visibility CalcVisibility(BuildableObject o)
+
+    private Visibility CalcVisibility(BuildableObject o)
     {
       if(o.isPreview)
       {
         return Visibility.Ignore;
       }
-      
+
       var isDeco = o is Deco;
       var isPath = o is Path;
       if(!(isDeco || isPath))
       {
         return Visibility.Ignore;
       }
-      
+
       if(isDeco && park.hideSceneryEnabled)
       {
         return Visibility.Ignore;
@@ -215,7 +212,7 @@ namespace Craxy.Parkitect.HideScenery
       {
         return Visibility.Ignore;
       }
-      
+
       if(IsHidden(o))
       {
         return Visibility.Hidden;

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Craxy.Parkitect.HideScenery.Selection
 {
-  enum Visibility
+  internal enum Visibility
   {
     /// <summary>
     /// Object is ignored and not collected.
@@ -31,21 +30,19 @@ namespace Craxy.Parkitect.HideScenery.Selection
     /// </summary>
     Hidden,
   }
-  static class HitUtility
+  internal static class HitUtility
   {
     public delegate Visibility CalcVisibility(BuildableObject o);
     private static int Compare(BuildableObjectBelowMouseInfo o1, BuildableObjectBelowMouseInfo o2)
     {
-      switch (Comparer<float>.Default.Compare(o1.HitDistance, o2.HitDistance))
+      return Comparer<float>.Default.Compare(o1.HitDistance, o2.HitDistance) switch
       {
-        case 0:
-          return -1 * Comparer<Visibility>.Default.Compare(o1.HitVisibility, o2.HitVisibility);
-        case var c:
-          return c;
-      }
+        0 => -1 * Comparer<Visibility>.Default.Compare(o1.HitVisibility, o2.HitVisibility),
+        var c => c,
+      };
     }
 
-    private static BuildableObjectBelowMouseInfo CreateInfo(in MouseCollider.HitInfo hitInfo, BuildableObject buildableObject, Visibility visibility)
+    private static BuildableObjectBelowMouseInfo CreateInfo(MouseCollider.HitInfo hitInfo, BuildableObject buildableObject, Visibility visibility)
     {
       return new BuildableObjectBelowMouseInfo
       {
@@ -56,24 +53,24 @@ namespace Craxy.Parkitect.HideScenery.Selection
       };
     }
 
-    private static readonly List<BuildableObjectBelowMouseInfo> tmpResults = new List<BuildableObjectBelowMouseInfo>();
+    private static readonly List<BuildableObjectBelowMouseInfo> tmpResults = new();
     /// <summary>
     /// Returns object below the mouse.
     /// Unlike Utility.getObjectBelowMouse, which returns the closest canBeSelected() object,
     /// this returns the closest visible object and all hidden object between.
-    /// 
+    ///
     /// The results list is sorted by closest to farthest object.
     /// Hidden objects are allways before visible object, even when same distance.
-    /// The results contain either zero or one visible object. 
-    /// If there are multiple visible object with the same distance, the first visible object 
+    /// The results contain either zero or one visible object.
+    /// If there are multiple visible object with the same distance, the first visible object
     /// found by MouseCollisions.Instance.raycastAll is returned.
     /// If there's a visible object, it's the last element in the results list.
-    /// 
+    ///
     /// This method does not handle any layers (unlike Utility.getObjectBelowMouse)!
     /// The results input list must be empty!
     /// -> when HideScenery or HidePath enabled, this method still finds the by Parkitect hidden objects.
-    /// 
-    ///    -> exclude these objects via suitable calcVisibility method 
+    ///
+    ///    -> exclude these objects via suitable calcVisibility method
     ///       (like `if (o is Deco && park.hideScenery) { return Ignore }`)
     /// </summary>
     public static void GetObjectsBelowMouse(CalcVisibility calcVisibility, List<BuildableObjectBelowMouseInfo> results)
@@ -125,7 +122,6 @@ namespace Craxy.Parkitect.HideScenery.Selection
             var visibility = calcVisibility(o);
             var info = CreateInfo(hit, o, visibility);
             results.Add(info);
-
           }
           else
           {
@@ -145,8 +141,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
     }
   }
 
-
-  struct BuildableObjectBelowMouseInfo
+  internal struct BuildableObjectBelowMouseInfo
   {
     public BuildableObject HitObject;
     public float HitDistance;

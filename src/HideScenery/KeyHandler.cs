@@ -2,16 +2,16 @@ using UnityEngine;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  static class KeyHandler
+  internal static class KeyHandler
   {
     //todo: description & names
     private static string GroupIdentifier => Mod.identifier;
-    public static readonly KeyGroup Group = new KeyGroup(GroupIdentifier)
+    public static readonly KeyGroup Group = new(GroupIdentifier)
     {
       keyGroupName = Mod.name,
     };
     private static string Name(string name) => GroupIdentifier + "/" + name;
-    public static readonly KeyMapping ToggleHideSceneryKey = new KeyMapping(
+    public static readonly KeyMapping ToggleHideSceneryKey = new(
       Name("ToggleHideScenery"),
       KeyCode.Period,
       KeyCode.None
@@ -20,7 +20,7 @@ namespace Craxy.Parkitect.HideScenery
       keyName = "Toggle Hide Scenery (with GUI)",
       keyDescription = "",
     };
-    public static readonly KeyMapping ToggleHideSceneryNoGuiKey = new KeyMapping(
+    public static readonly KeyMapping ToggleHideSceneryNoGuiKey = new(
         Name("ToggleHideSceneryNoGui"),
         KeyCode.Comma,
         KeyCode.None
@@ -30,7 +30,7 @@ namespace Craxy.Parkitect.HideScenery
       keyDescription = "",
     };
 
-    public static readonly KeyMapping ToggleNoneSelectionKey = new KeyMapping(
+    public static readonly KeyMapping ToggleNoneSelectionKey = new(
       Name("ToggleNoneSelection"),
       KeyCode.Keypad7,
       KeyCode.None
@@ -39,7 +39,7 @@ namespace Craxy.Parkitect.HideScenery
       keyName = "Toggle None Selection",
       keyDescription = "",
     };
-    public static readonly KeyMapping ToggleIndividualSelectionKey = new KeyMapping(
+    public static readonly KeyMapping ToggleIndividualSelectionKey = new(
       Name("ToggleIndividualSelection"),
       KeyCode.Keypad8,
       KeyCode.None
@@ -48,7 +48,7 @@ namespace Craxy.Parkitect.HideScenery
       keyName = "Toggle Individual Selection",
       keyDescription = "",
     };
-    public static readonly KeyMapping ToggleBoxSelectionKey = new KeyMapping(
+    public static readonly KeyMapping ToggleBoxSelectionKey = new(
       Name("ToggleBoxSelection"),
       KeyCode.Keypad9,
       KeyCode.None
@@ -57,7 +57,7 @@ namespace Craxy.Parkitect.HideScenery
       keyName = "Toggle Box Selection",
       keyDescription = "",
     };
-    public static readonly KeyMapping ClearSelectionKey = new KeyMapping(
+    public static readonly KeyMapping ClearSelectionKey = new(
       Name("ClearSelection"),
       KeyCode.Keypad3,
       KeyCode.None

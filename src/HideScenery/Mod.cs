@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -42,14 +41,11 @@ namespace Craxy.Parkitect.HideScenery
       {
         Mod.Log("onEnable but no GameController -> ignore");
         var mod = ModManager.Instance.getModEntries().SingleOrDefault(me => me.mod.getIdentifier() == this.getIdentifier());
-        if(mod != null)
-        {
-          mod.disableMod();
-        }
+        mod?.disableMod();
         return;
       }
       Log("enabled");
-      
+
       go = new GameObject("HideScenery");
       go.AddComponent<HideSceneryHandler>();
       KeyHandler.RegisterKeys();

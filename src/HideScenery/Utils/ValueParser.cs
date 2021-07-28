@@ -56,7 +56,6 @@ namespace Craxy.Parkitect.HideScenery.Utils
     public bool IsValidInput => LastParseResult.HasValue;
   }
 
-
   public static class Parser
   {
     public static float? Float(string value)

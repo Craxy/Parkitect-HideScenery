@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  sealed class HideSceneryHandler : MonoBehaviour
+  internal sealed class HideSceneryHandler : MonoBehaviour
   {
     private HideScenerySelectionHandler selectionHandler;
     private bool SelectionHandlerEnabled
@@ -16,16 +16,16 @@ namespace Craxy.Parkitect.HideScenery
       get => selectionHandler.ShowGui;
       set => selectionHandler.ShowGui = value;
     }
-    void Awake()
+    private void Awake()
     {
       selectionHandler = gameObject.AddComponent<HideScenerySelectionHandler>();
       selectionHandler.enabled = false;
     }
-    void OnDisable()
+    private void OnDisable()
     {
       DisableSelectionHandler();
     }
-    void OnDestroy()
+    private void OnDestroy()
     {
       if (selectionHandler != null)
       {
@@ -34,13 +34,13 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    void Update()
+    private void Update()
     {
       if (UIUtility.isInputFieldFocused() || GameController.Instance.isGameInputLocked())
       {
         return;
       }
-      
+
       void ToggleMode(Mode mode)
       {
         if(!SelectionHandlerEnabled)
@@ -82,7 +82,7 @@ namespace Craxy.Parkitect.HideScenery
       {
         ToggleEnabled(withGui: true);
       }
-      else if(InputManager.getKeyDown(KeyHandler.ToggleHideSceneryNoGuiKey.keyIdentifier)) 
+      else if(InputManager.getKeyDown(KeyHandler.ToggleHideSceneryNoGuiKey.keyIdentifier))
       {
         ToggleEnabled(withGui: false);
       }
@@ -103,22 +103,22 @@ namespace Craxy.Parkitect.HideScenery
         ClearSelection();
       }
     }
-    
-    void EnableSelectionHandler()
+
+    private void EnableSelectionHandler()
     {
       if(!SelectionHandlerEnabled)
       {
         SelectionHandlerEnabled = true;
       }
     }
-    void DisableSelectionHandler()
+    private void DisableSelectionHandler()
     {
       if(SelectionHandlerEnabled)
       {
         SelectionHandlerEnabled = false;
       }
     }
-    void ClearSelection()
+    private void ClearSelection()
     {
       if(SelectionHandlerEnabled)
       {

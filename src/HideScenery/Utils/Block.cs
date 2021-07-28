@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Craxy.Parkitect.HideScenery.Utils
 {
   [Flags]
-  enum BlockSide
+  internal enum BlockSide
   {
     None = 0,
     North = 1 << 0,
@@ -15,7 +15,7 @@ namespace Craxy.Parkitect.HideScenery.Utils
     All = ~0,
   }
 
-  static class BlockSideHelper
+  internal static class BlockSideHelper
   {
     private static readonly BlockSide[] values = new[] {
       BlockSide.North,
@@ -30,15 +30,14 @@ namespace Craxy.Parkitect.HideScenery.Utils
 
     public static BlockSide FromSide(int side)
     {
-      switch (side)
+      return side switch
       {
-        case 0: return BlockSide.North;
-        case 1: return BlockSide.West;
-        case 2: return BlockSide.South;
-        case 3: return BlockSide.East;
-        default: return BlockSide.None;
-
-      }
+        0 => BlockSide.North,
+        1 => BlockSide.West,
+        2 => BlockSide.South,
+        3 => BlockSide.East,
+        _ => BlockSide.None,
+      };
     }
 
     public const float FrontSidesAngleLimit = 15.0f;
@@ -89,24 +88,24 @@ namespace Craxy.Parkitect.HideScenery.Utils
     }
   }
 
-  static class BlockSideExtensions
+  internal static class BlockSideExtensions
   {
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasSide(this BlockSide sides, int side)
       => sides.HasSide(BlockSideHelper.FromSide(side));
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasSide(this BlockSide sides, BlockSide side)
       => side != BlockSide.None && ((sides & side) != BlockSide.None);
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockSide Add(this BlockSide sides, BlockSide side)
       => sides | side;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockSide Remove(this BlockSide sides, BlockSide side)
       => sides & ~side;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockSide Toggle(this BlockSide sides, BlockSide side)
       => sides ^ side;
-    [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockSide Set(this BlockSide sides, BlockSide side, bool enabled)
       => enabled ? sides | side : sides & ~side;
   }

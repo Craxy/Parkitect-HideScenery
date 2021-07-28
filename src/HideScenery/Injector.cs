@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  sealed class Injector
+  internal sealed class Injector
   {
     private static Injector _injector = null;
     public static Injector Instance
@@ -24,7 +24,7 @@ namespace Craxy.Parkitect.HideScenery
 
     private Injector() { }
 
-    private readonly List<MethodPatch> patches = new List<MethodPatch>();
+    private readonly List<MethodPatch> patches = new();
     private Harmony harmony = null;
     private void InitializePatches()
     {
@@ -84,7 +84,7 @@ namespace Craxy.Parkitect.HideScenery
         Prefix = prefix;
       }
       public static MethodPatch Create(MethodInfo original, MethodInfo prefix)
-        => new MethodPatch(original, new HarmonyMethod(prefix));
+        => new(original, new HarmonyMethod(prefix));
 
       public void Apply(Harmony harmony)
       {
@@ -134,21 +134,12 @@ namespace Craxy.Parkitect.HideScenery
         }
 
         var visibility = cv(__instance);
-        switch (visibility)
+        __result = visibility switch
         {
-          case Visibility.HiddenByParkitect:
-          case Visibility.Hidden:
-            __result = false;
-            break;
-          case Visibility.Ignore:
-          case Visibility.Visible:
-          case Visibility.Block:
-            __result = true;
-            break;
-          default:
-            throw new System.InvalidOperationException($"Unhandled visibility {visibility}");
-        }
-
+          Visibility.HiddenByParkitect or Visibility.Hidden => false,
+          Visibility.Ignore or Visibility.Visible or Visibility.Block => true,
+          _ => throw new System.InvalidOperationException($"Unhandled visibility {visibility}"),
+        };
         return false;
       }
     }

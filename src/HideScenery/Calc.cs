@@ -9,7 +9,7 @@ using Handler = Craxy.Parkitect.HideScenery.HideScenerySelectionHandler;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  sealed class Calc
+  internal sealed class Calc
   {
     private readonly Park park;
     private readonly Handler handler;
@@ -104,15 +104,12 @@ namespace Craxy.Parkitect.HideScenery
         return DoNothing;
       }
 
-      switch (op)
+      return op switch
       {
-        case Op.Remove when options.ApplyFiltersOnAddOnly:
-          return IsHidden(o) ? Remove : DoNothing;
-        case var _ when !options.HidePaths:
-          return DoNothing;
-        default:
-          return CalcAddRemove(op, o);
-      }
+        Op.Remove when options.ApplyFiltersOnAddOnly => IsHidden(o) ? Remove : DoNothing,
+        var _ when !options.HidePaths => DoNothing,
+        _ => CalcAddRemove(op, o),
+      };
     }
     private SelectionAction DecoAction(SelectionOperation op, Bounds bounds, BuildableObject o, AdvancedOptions options)
     {
@@ -134,13 +131,11 @@ namespace Craxy.Parkitect.HideScenery
       var sceneryType = CalcSceneryType(o);
       if (options.SceneryToHide.HasSet(sceneryType))
       {
-        switch (sceneryType)
+        return sceneryType switch
         {
-          case SceneryType.Wall:
-            return WallAction(op, bounds, o, options.WallOptions);
-          default:
-            return CalcAddRemove(op, o);
-        }
+          SceneryType.Wall => WallAction(op, bounds, o, options.WallOptions),
+          _ => CalcAddRemove(op, o),
+        };
       }
       else
       {
@@ -220,15 +215,12 @@ namespace Craxy.Parkitect.HideScenery
     private SelectionAction CalcRemove(BuildableObject o) => IsHidden(o) ? Remove : DoNothing;
     private SelectionAction CalcAddRemove(SelectionOperation op, BuildableObject o)
     {
-      switch (op)
+      return op switch
       {
-        case Op.Add:
-          return CalcAdd(o);
-        case Op.Remove:
-          return CalcRemove(o);
-        default:
-          throw new InvalidOperationException("Unknown Operation " + op);
-      }
+        Op.Add => CalcAdd(o),
+        Op.Remove => CalcRemove(o),
+        _ => throw new InvalidOperationException("Unknown Operation " + op),
+      };
     }
     private bool IsCategory(BuildableObject o, string category)
       => o.getCategoryTag() == category;

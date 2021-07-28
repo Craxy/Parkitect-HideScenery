@@ -7,29 +7,29 @@ using static GameController;
 
 namespace Craxy.Parkitect.HideScenery.Selection
 {
-  delegate void OnAddedSelectedObjectHandler(BuildableObject selectedObject);
-  delegate void OnRemovedSelectedObjectHandler(BuildableObject selectedObject);
-  enum Mode
+  internal delegate void OnAddedSelectedObjectHandler(BuildableObject selectedObject);
+  internal delegate void OnRemovedSelectedObjectHandler(BuildableObject selectedObject);
+  internal enum Mode
   {
     None,
     Individual,
     Box,
   }
 
-  enum SelectionAction
+  internal enum SelectionAction
   {
     DoNothing,
     Add,
     Remove,
   }
-  enum SelectionOperation
+  internal enum SelectionOperation
   {
     Add,
     Remove,
   }
-  delegate SelectionAction CalcAction(SelectionOperation op, BuildableObject o);
-  delegate SelectionAction CalcBoxAction(SelectionOperation op, Bounds bounds, BuildableObject o);
-  interface ICustomSelectionTool
+  internal delegate SelectionAction CalcAction(SelectionOperation op, BuildableObject o);
+  internal delegate SelectionAction CalcBoxAction(SelectionOperation op, Bounds bounds, BuildableObject o);
+  internal interface ICustomSelectionTool
   {
     void OnEnable();
     void OnDisable();
@@ -38,7 +38,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
     event OnAddedSelectedObjectHandler OnAddedSelectedObject;
     event OnRemovedSelectedObjectHandler OnRemovedSelectedObject;
   }
-  sealed class CustomSelectionTool : AbstractMouseTool, IMouseToolTicked, IMouseTool
+  internal sealed class CustomSelectionTool : AbstractMouseTool, IMouseToolTicked, IMouseTool
   {
     public override bool canEscapeMouseTool() => true;
     public override GameController.GameFeature getDisallowedFeatures()
@@ -197,12 +197,12 @@ namespace Craxy.Parkitect.HideScenery.Selection
       }
     }
   }
-  sealed class IndividualSelectionTool : ICustomSelectionTool
+  internal sealed class IndividualSelectionTool : ICustomSelectionTool
   {
     public event OnAddedSelectedObjectHandler OnAddedSelectedObject;
-    void OnAdd(BuildableObject o) => OnAddedSelectedObject?.Invoke(o);
+    private void OnAdd(BuildableObject o) => OnAddedSelectedObject?.Invoke(o);
     public event OnRemovedSelectedObjectHandler OnRemovedSelectedObject;
-    void OnRemove(BuildableObject o) => OnRemovedSelectedObject?.Invoke(o);
+    private void OnRemove(BuildableObject o) => OnRemovedSelectedObject?.Invoke(o);
 
     private void UpdateHintMessages(bool show)
     {
@@ -229,15 +229,12 @@ namespace Craxy.Parkitect.HideScenery.Selection
     public CalcAction CalcAction = DefaultAction;
     public static SelectionAction DefaultAction(SelectionOperation op, BuildableObject o)
     {
-      switch(op)
+      return op switch
       {
-        case SelectionOperation.Add:
-          return SelectionAction.Add;
-        case SelectionOperation.Remove:
-          return SelectionAction.Remove;
-        default:
-          throw new InvalidOperationException("Unknown Operation " + op);
-      }
+        SelectionOperation.Add => SelectionAction.Add,
+        SelectionOperation.Remove => SelectionAction.Remove,
+        _ => throw new InvalidOperationException("Unknown Operation " + op),
+      };
     }
     public HitUtility.CalcVisibility CalcVisibility = DefaultVisibility;
     public static Visibility DefaultVisibility(BuildableObject o)
@@ -249,11 +246,11 @@ namespace Craxy.Parkitect.HideScenery.Selection
     /// <summary>
     /// List for HitUtility
     /// </summary>
-    private List<BuildableObjectBelowMouseInfo> hits = new List<BuildableObjectBelowMouseInfo>();
+    private List<BuildableObjectBelowMouseInfo> hits = new();
     /// <summary>
     /// List to detect changes in consecutive hits
     /// </summary>
-    private List<BuildableObjectBelowMouseInfo> currentObjects = new List<BuildableObjectBelowMouseInfo>();
+    private List<BuildableObjectBelowMouseInfo> currentObjects = new();
 
     private int ObjectsCount => currentObjects.Count;
     private bool HasObjects => currentObjects.Count > 0;
@@ -369,7 +366,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
         ShowTooltip(mouseDown, objectsChanged, selectedObjectChanged);
       }
     }
-    
+
     private void OnSelectedObject(SelectionOperation op, BuildableObject o)
     {
       switch(CalcAction(op, o))
@@ -423,7 +420,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
         if (HasVisibleObject)
         {
           // only one element that is visible: count = 1 -> idx = 0 -> selected = -1
-          selectedHiddenObjectIndex -= 1;
+          selectedHiddenObjectIndex--;
         }
       }
       else
@@ -435,7 +432,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
     //todo: change from time to mouse moved?
     private float updateTooltipTimeout = 0.0f;
     private const float updateTooltipEvery = 0.2f;
-    private StringBuilder tooltip = new StringBuilder();
+    private readonly StringBuilder tooltip = new();
     private void ShowTooltip(bool mouseDown, bool objectsChanged, bool objectChanged)
     {
       void HideTooltip() => UITooltipController.Instance.hideTooltip();
@@ -519,25 +516,22 @@ namespace Craxy.Parkitect.HideScenery.Selection
       updateTooltipTimeout -= Time.unscaledDeltaTime;
     }
   }
-  sealed class BoxSelectionTool : ICustomSelectionTool
+  internal sealed class BoxSelectionTool : ICustomSelectionTool
   {
     public event OnAddedSelectedObjectHandler OnAddedSelectedObject;
-    void OnAdd(BuildableObject o) => OnAddedSelectedObject?.Invoke(o);
+    private void OnAdd(BuildableObject o) => OnAddedSelectedObject?.Invoke(o);
     public event OnRemovedSelectedObjectHandler OnRemovedSelectedObject;
-    void OnRemove(BuildableObject o) => OnRemovedSelectedObject?.Invoke(o);
+    private void OnRemove(BuildableObject o) => OnRemovedSelectedObject?.Invoke(o);
 
     public CalcBoxAction CalcAction = DefaultAction;
     public static SelectionAction DefaultAction(SelectionOperation op, Bounds bounds, BuildableObject o)
     {
-      switch(op)
+      return op switch
       {
-        case SelectionOperation.Add:
-          return SelectionAction.Add;
-        case SelectionOperation.Remove:
-          return SelectionAction.Remove;
-        default:
-          throw new InvalidOperationException("Unknown Operation " + op);
-      }
+        SelectionOperation.Add => SelectionAction.Add,
+        SelectionOperation.Remove => SelectionAction.Remove,
+        _ => throw new InvalidOperationException("Unknown Operation " + op),
+      };
     }
     
     private void UpdateHintMessages(bool show)
@@ -740,8 +734,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
       {
         var plane = new UnityEngine.Plane(Vector3.up, mouseDownWorldPosition + startPositionOffset + endPositionOffset);
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        float enter;
-        if (plane.Raycast(ray, out enter))
+        if (plane.Raycast(ray, out var enter))
         {
           var point = ray.GetPoint(enter);
           if (rectangleSelectionState == RectangleSelectionState.DRAG_HEIGHT)
@@ -770,19 +763,19 @@ namespace Craxy.Parkitect.HideScenery.Selection
         vector3_1 = currentMouseWorldPosition + startPositionOffset;
         vector3_2 = currentMouseWorldPosition + startPositionOffset;
       }
-      Vector3 lhs = new Vector3((float)Mathf.FloorToInt(vector3_1.x + 0.0001f), MathUtility.roundToNearest(vector3_1.y, STEP_HEIGHT), (float)Mathf.FloorToInt(vector3_1.z + 0.0001f));
-      Vector3 rhs = new Vector3((float)Mathf.FloorToInt(vector3_2.x + 0.0001f), MathUtility.roundToNearest(vector3_2.y, STEP_HEIGHT), (float)Mathf.FloorToInt(vector3_2.z + 0.0001f));
+      Vector3 lhs = new((float)Mathf.FloorToInt(vector3_1.x + 0.0001f), MathUtility.roundToNearest(vector3_1.y, STEP_HEIGHT), (float)Mathf.FloorToInt(vector3_1.z + 0.0001f));
+      Vector3 rhs = new((float)Mathf.FloorToInt(vector3_2.x + 0.0001f), MathUtility.roundToNearest(vector3_2.y, STEP_HEIGHT), (float)Mathf.FloorToInt(vector3_2.z + 0.0001f));
       Vector3 vector3_3 = Vector3.Min(lhs, rhs);
       Vector3 vector3_4 = Vector3.Max(lhs, rhs);
       Vector3 size = vector3_4 - vector3_3 + Vector3.one;
-      Vector3 center = vector3_3 + (vector3_4 - vector3_3) / 2f + Vector3.one / 2f;
+      Vector3 center = vector3_3 + ((vector3_4 - vector3_3) / 2f) + (Vector3.one / 2f);
       selectionCube.transform.localScale = size;
       selectionOutline.setSize(size);
       selectionMarker.transform.position = center;
       heightMarkerStart.transform.position = vector3_3 + new Vector3(0.5f, 0.0f, 0.5f);
       heightMarkerEnd.transform.position = vector3_4 + new Vector3(0.5f, 0.0f, 0.5f);
       heightMarkerEnd.gameObject.SetActive(vector3_3 != vector3_4);
-      if (!isMouseUsable || rectangleSelectionState != RectangleSelectionState.DRAG_HEIGHT || !Input.GetMouseButtonUp(0) && !Input.GetMouseButtonUp(1))
+      if (!isMouseUsable || rectangleSelectionState != RectangleSelectionState.DRAG_HEIGHT || (!Input.GetMouseButtonUp(0) && !Input.GetMouseButtonUp(1)))
       {
         return;
       }
@@ -792,7 +785,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
       EscapeHierarchy.Instance.remove(OnEscapeRectangleMode);
       selectionCube.transform.localScale = Vector3.one;
       selectionOutline.setSize(Vector3.one);
-      Bounds bounds = new Bounds(center, size - new Vector3(0.01f, 0.0f, 0.01f));
+      Bounds bounds = new(center, size - new Vector3(0.01f, 0.0f, 0.01f));
       Vector3 max = bounds.max;
       max.y -= 0.005f;
       bounds.max = max;
@@ -831,8 +824,10 @@ namespace Craxy.Parkitect.HideScenery.Selection
     private static BuilderMousePositionInfo GetHitInfo(Vector3 mousePosition)
     {
       var ray = Camera.main.ScreenPointToRay(mousePosition);
-      var mousePositionInfo = new BuilderMousePositionInfo();
-      mousePositionInfo.hitDistance = float.MaxValue;
+      var mousePositionInfo = new BuilderMousePositionInfo
+      {
+        hitDistance = float.MaxValue
+      };
       foreach (var raycastHit in Physics.RaycastAll(ray, float.PositiveInfinity, 4096))
       {
         int num = 1 << raycastHit.collider.gameObject.layer;
@@ -846,7 +841,7 @@ namespace Craxy.Parkitect.HideScenery.Selection
       return mousePositionInfo;
     }
 
-    private void OnSelectedObject(SelectionOperation op, in Bounds bounds, BuildableObject o)
+    private void OnSelectedObject(SelectionOperation op, Bounds bounds, BuildableObject o)
     {
       switch(CalcAction(op, bounds, o))
       {

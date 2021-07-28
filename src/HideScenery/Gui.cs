@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Craxy.Parkitect.HideScenery.Selection;
@@ -14,7 +12,7 @@ using Handler = Craxy.Parkitect.HideScenery.HideScenerySelectionHandler;
 
 namespace Craxy.Parkitect.HideScenery
 {
-  sealed class Gui
+  internal sealed class Gui
   {
     private const float width = 270.0f;
     private const float contractedHeight = 175.0f;
@@ -86,7 +84,7 @@ namespace Craxy.Parkitect.HideScenery
       using (Layout.Area(new Rect(Screen.width - right - width, top, width, height)))
       {
         GUI.Box(new Rect(0.0f, 0.0f, width, height), backgroundTexture);
-        using (Layout.Area(new Rect(padding, padding, width - 2 * padding, height - 2 * padding)))
+        using (Layout.Area(new Rect(padding, padding, width - (2 * padding), height - (2 * padding))))
         {
           using (Layout.Vertical())
           {
@@ -199,7 +197,7 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    private readonly ValueParser<float> hideAboveHeightValueParser = new ValueParser<float>(Parser.Float, "0");
+    private readonly ValueParser<float> hideAboveHeightValueParser = new(Parser.Float, "0");
     private bool showHideAboveHeightOptions = false;
     private void ShowHideAboveHeight(float indentation, Handler hs)
     {
@@ -435,15 +433,15 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    private readonly Tooltip tooltip = new Tooltip();
+    private readonly Tooltip tooltip = new();
     private void ShowTooltip(Handler hs)
     {
       tooltip.Show(hs);
     }
     private class Tooltip
     {
-      float updateTooltipTimeout = 0.0f;
-      const float updateTooltipTimeoutStep = 0.2f;
+      private float updateTooltipTimeout = 0.0f;
+      private const float updateTooltipTimeoutStep = 0.2f;
       public void Show(Handler hs)
       {
         if (UIUtility.isMouseOverUIElement())
@@ -470,7 +468,7 @@ namespace Craxy.Parkitect.HideScenery
         updateTooltipTimeout -= Time.unscaledDeltaTime;
       }
 
-      private readonly StringBuilder sb = new StringBuilder();
+      private readonly StringBuilder sb = new();
 
       private string GetTooltip(Handler hs, BuildableObject o)
       {
@@ -520,7 +518,6 @@ namespace Craxy.Parkitect.HideScenery
           //   indent(8); kvn("MinY", cti.getMinY());
           //   indent(8); kvn("MaxY", cti.getMaxY());
           // }
-
 
           switch (o)
           {
@@ -592,12 +589,11 @@ namespace Craxy.Parkitect.HideScenery
         sb.Clear();
         return tooltip;
       }
-      private readonly List<BuildableObjectBelowMouseInfo> hits = new List<BuildableObjectBelowMouseInfo>();
 
       private static bool TryGetBuildableObjectBelowMouse(out BuildableObject o)
       {
         var hit = Utility.getObjectBelowMouse<BuildableObject>(0);
-        bool TryGetMatchingObject(IMouseSelectable ms, out BuildableObject bo)
+        static bool TryGetMatchingObject(IMouseSelectable ms, out BuildableObject bo)
         {
           if (ms is Deco || ms is Path)
           {
