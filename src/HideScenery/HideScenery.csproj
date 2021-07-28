@@ -424,6 +424,10 @@
 
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.0.4" />
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.11.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <PropertyGroup>
