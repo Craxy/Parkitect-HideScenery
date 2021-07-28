@@ -71,20 +71,23 @@ namespace Craxy.Parkitect.HideScenery
 
     public SelectionAction BoxAction(SelectionOperation op, Bounds bounds, BuildableObject o)
     {
+      return Action(op, bounds, o, handler.Options.BoxOptions);
+    }
+
+    private SelectionAction Action(SelectionOperation op, Bounds bounds, BuildableObject o, AdvancedOptions options)
+    {
       if (o.isPreview)
       {
         return DoNothing;
       }
 
-      var options = handler.Options.BoxOptions;
-
       if (IsPath(o))
       {
-        return PathBoxAction(op, bounds, o);
+        return PathAction(op, bounds, o, options);
       }
       else if (IsDeco(o))
       {
-        return DecoBoxAction(op, bounds, o);
+        return DecoAction(op, bounds, o, options);
       }
       else
       {
@@ -92,7 +95,7 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    private SelectionAction PathBoxAction(SelectionOperation op, in Bounds bounds, BuildableObject o)
+    private SelectionAction PathAction(SelectionOperation op, Bounds bounds, BuildableObject o, AdvancedOptions options)
     {
       Debug.Assert(IsPath(o));
 
@@ -100,8 +103,6 @@ namespace Craxy.Parkitect.HideScenery
       {
         return DoNothing;
       }
-
-      var options = Options.BoxOptions;
 
       switch (op)
       {
@@ -113,7 +114,7 @@ namespace Craxy.Parkitect.HideScenery
           return CalcAddRemove(op, o);
       }
     }
-    private SelectionAction DecoBoxAction(SelectionOperation op, in Bounds bounds, BuildableObject o)
+    private SelectionAction DecoAction(SelectionOperation op, Bounds bounds, BuildableObject o, AdvancedOptions options)
     {
       Debug.Assert(IsDeco(o));
 
@@ -121,8 +122,6 @@ namespace Craxy.Parkitect.HideScenery
       {
         return DoNothing;
       }
-
-      var options = Options.BoxOptions;
 
       switch (op)
       {
@@ -138,7 +137,7 @@ namespace Craxy.Parkitect.HideScenery
         switch (sceneryType)
         {
           case SceneryType.Wall:
-            return WallBoxAction(op, bounds, o);
+            return WallAction(op, bounds, o, options.WallOptions);
           default:
             return CalcAddRemove(op, o);
         }
@@ -148,17 +147,16 @@ namespace Craxy.Parkitect.HideScenery
         return DoNothing;
       }
     }
-    private SelectionAction WallBoxAction(SelectionOperation op, in Bounds bounds, BuildableObject o)
+    private SelectionAction WallAction(SelectionOperation op, Bounds bounds, BuildableObject o, WallOptions options)
     {
       Debug.Assert(CalcSceneryType(o) == SceneryType.Wall);
 
-      var options = Options.BoxOptions.WallOptions;
       if (options.OnlyMatchExactlyInBounds)
       {
         switch (o)
         {
           case Wall wall:
-            bool IsInBounds(in Bounds b)
+            bool IsInBounds(Bounds b)
             {
               // bounds.Contains(o.transform.position);
               // ^^^
@@ -211,6 +209,11 @@ namespace Craxy.Parkitect.HideScenery
       {
         return CalcAddRemove(op, o);
       }
+    }
+
+    public SelectionAction HideAboveHeightAction(SelectionOperation op, Bounds bounds, BuildableObject o)
+    {
+      return Action(op, bounds, o, handler.Options.HideAboveHeightOptions);
     }
 
     private SelectionAction CalcAdd(BuildableObject o) => IsHidden(o) ? DoNothing : Add;

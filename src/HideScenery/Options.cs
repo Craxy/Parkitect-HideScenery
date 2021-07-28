@@ -33,16 +33,9 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    #region Selection options
-    #region Box options
-    private readonly BoxOptions boxOptions = new BoxOptions();
-    public BoxOptions BoxOptions
-    {
-      get => boxOptions;
-    }
-    #endregion Box options
-    #endregion Selection options
+    public readonly BoxOptions BoxOptions = new BoxOptions();
 
+    public readonly HideAboveHeightOptions HideAboveHeightOptions = new HideAboveHeightOptions();
 
     public delegate void PropertyChanged(Options options, string property);
     public event PropertyChanged Changed;
@@ -92,7 +85,8 @@ namespace Craxy.Parkitect.HideScenery
     public static HideType Set(this HideType value, HideType flag, bool enabled)
       => enabled ? value | flag : value & ~flag;
   }
-  sealed class BoxOptions
+
+  abstract class AdvancedOptions
   {
     public bool ApplyFiltersOnAddOnly = true;
 
@@ -110,9 +104,12 @@ namespace Craxy.Parkitect.HideScenery
       UpdateNotFacingCurrentView = true,
     };
   }
+
+  sealed class BoxOptions : AdvancedOptions {}
+
   sealed class RoofOptions
   {
-    public HideType HideBy = HideType.All;  // can't be class
+    public HideType HideBy = HideType.All;  // cannot be class
   }
   sealed class WallOptions
   {
@@ -120,5 +117,10 @@ namespace Craxy.Parkitect.HideScenery
     public bool OnlyMatchExactlyInBounds = false;
     public bool HideOnlyFacingCurrentView = false;
     public bool UpdateNotFacingCurrentView = true;
+  }
+
+  sealed class HideAboveHeightOptions : AdvancedOptions
+  {
+    public float Height = 4.1f;
   }
 }

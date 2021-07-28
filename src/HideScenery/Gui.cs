@@ -17,7 +17,7 @@ namespace Craxy.Parkitect.HideScenery
   sealed class Gui
   {
     private const float width = 270.0f;
-    private const float contractedHeight = 130.0f;
+    private const float contractedHeight = 175.0f;
     private const float expandedHeight = 450.0f;
     private const float right = 10.0f;
     private const float top = 75.0f;
@@ -27,7 +27,7 @@ namespace Craxy.Parkitect.HideScenery
     private static void hIndent() => Space(hIndentation);
     private static void vIndent() => Space(vIndentation);
 
-    private Texture2D backgroundTexture;
+    private readonly Texture2D backgroundTexture;
     public Gui()
     {
       backgroundTexture = new Texture2D(1, 1);
@@ -96,6 +96,7 @@ namespace Craxy.Parkitect.HideScenery
               ShowHeader(0.0f, hs);
               ShowTransparency(0.0f, hs);
               ShowToggleMode(0.0f, hs);
+              ShowHideAboveHeight(0.0f, hs);
               ShowNumberOfHiddenObjects(0.0f, hs);
             }
 
@@ -104,9 +105,13 @@ namespace Craxy.Parkitect.HideScenery
               return;
             }
 
+            // only visible when expanded
             vIndent();
             scrollPosition = BeginScrollView(scrollPosition);
-            // only visible when expanded
+            if(showHideAboveHeightOptions)
+            {
+              ShowHideAboveHeightOptions(0.0f, hs);
+            }
             {
               switch (hs.Options.Mode)
               {
@@ -165,7 +170,7 @@ namespace Craxy.Parkitect.HideScenery
         }
       }
     }
-    private static void ShowToggleMode(float indentation, Handler hs)
+    private void ShowToggleMode(float indentation, Handler hs)
     {
       using (Layout.HorizontalIndentation(indentation))
       {
@@ -190,6 +195,44 @@ namespace Craxy.Parkitect.HideScenery
         ShowTM(Mode.Individual, "individual");
         FlexibleSpace();
         ShowTM(Mode.Box, "box");
+        FlexibleSpace();
+      }
+    }
+
+    private readonly ValueParser<float> hideAboveHeightValueParser = new ValueParser<float>(Parser.Float, "0");
+    private bool showHideAboveHeightOptions = false;
+    private void ShowHideAboveHeight(float indentation, Handler hs)
+    {
+      var options = hs.Options.HideAboveHeightOptions;
+      if(options.Height != hideAboveHeightValueParser.Value)
+      {
+        hideAboveHeightValueParser.Input = options.Height.ToString();
+      }
+
+      using(Layout.HorizontalIndentation(indentation + hIndentation))
+      {
+        Label("∀ height ≥");
+        Space(1.0f);
+        UIControl.ValidationTextField(hideAboveHeightValueParser, GUILayout.Width(65.0f));
+        if(hideAboveHeightValueParser.IsValidInput && hideAboveHeightValueParser.Value != options.Height)
+        {
+          options.Height = hideAboveHeightValueParser.Value;
+        }
+        Space(1.0f);
+        using(Layout.GuiEnabled(hideAboveHeightValueParser.IsValidInput))
+        {
+          if(Button("Hide"))
+          {
+            hs.HideSceneryAbove(options.Height);
+          }
+        }
+        //show toggle for options
+        if(Expanded)
+        {
+          Space(3.0f);
+          showHideAboveHeightOptions = Toggle(showHideAboveHeightOptions, showHideAboveHeightOptions ? "↑" : "↓");
+        }
+        FlexibleSpace();
       }
     }
 
@@ -279,6 +322,77 @@ namespace Craxy.Parkitect.HideScenery
           ShowSceneryToHide(SceneryType.Other, "everything else");
           options.SceneryToHide = sceneryToHide;
 
+          indentation -= hIndentation;
+        }
+      }
+    }
+
+    private void ShowHideAboveHeightOptions(float indentation, Handler hs)
+    {
+      var options = hs.Options.HideAboveHeightOptions;
+
+      using(Layout.HorizontalIndentation(indentation))
+      {
+        Label("Hide above Height options:");
+      }
+      indentation += hIndentation;
+      using(Layout.HorizontalIndentation(indentation))
+      {
+        options.HidePaths = Toggle(options.HidePaths, "Hide paths");
+        FlexibleSpace();
+        options.HideScenery = Toggle(options.HideScenery, "Hide scenery");
+        Space(10.0f);
+      }
+      if (options.HideScenery)
+      {
+        // Scenery types
+        {
+          using (Layout.HorizontalIndentation(indentation))
+          {
+            Label("Scenery types:");
+          }
+          indentation += hIndentation;
+
+          var sceneryToHide = options.SceneryToHide;
+          void ShowSceneryToHide(SceneryType st, string name)
+          {
+            using (Layout.HorizontalIndentation(indentation))
+            {
+              var isSet = sceneryToHide.HasSet(st);
+              var newSet = Toggle(isSet, name);
+              if (isSet != newSet)
+              {
+                sceneryToHide = sceneryToHide.Set(st, newSet);
+              }
+            }
+          }
+
+          ShowSceneryToHide(SceneryType.Wall, "walls");
+          if (sceneryToHide.HasSet(SceneryType.Wall))
+          {
+            indentation += hIndentation;
+
+            using (Layout.HorizontalIndentation(indentation))
+            {
+              options.WallOptions.OnlyMatchExactlyInBounds = Toggle(options.WallOptions.OnlyMatchExactlyInBounds, "Find only exactly in bounds");
+            }
+            using (Layout.HorizontalIndentation(indentation))
+            {
+              options.WallOptions.HideOnlyFacingCurrentView = Toggle(options.WallOptions.HideOnlyFacingCurrentView, "Hide only walls facing view");
+            }
+            if (options.WallOptions.HideOnlyFacingCurrentView)
+            {
+              using (Layout.HorizontalIndentation(indentation))
+              {
+                options.WallOptions.UpdateNotFacingCurrentView = Toggle(options.WallOptions.UpdateNotFacingCurrentView, "Update walls not facing view");
+              }
+            }
+
+            indentation -= hIndentation;
+          }
+          ShowSceneryToHide(SceneryType.Roof, "roofs");
+          ShowSceneryToHide(SceneryType.Other, "everything else");
+          options.SceneryToHide = sceneryToHide;
 
           indentation -= hIndentation;
         }

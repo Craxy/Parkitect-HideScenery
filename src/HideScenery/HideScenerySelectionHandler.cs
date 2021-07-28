@@ -225,5 +225,33 @@ namespace Craxy.Parkitect.HideScenery
         return Visibility.Visible;
       }
     }
+
+    public void HideSceneryAbove(float height)
+    {
+      var mc = MouseCollisions.Instance;
+
+      var bounds = new Bounds();
+      bounds.SetMinMax(new Vector3(0.0f, height, 0.0f), new Vector3(Park.MAX_SIZE, 10_000.0f, Park.MAX_SIZE));
+      Mod.DebugLog($"Bounds: {bounds}");
+
+      //todo: cache?
+      var results = new List<MouseCollider>();
+      mc.octree.getColliding(bounds, results);
+
+      foreach (var coll in results)
+      {
+        var o = coll.buildableObject;
+        switch (calc.HideAboveHeightAction(SelectionOperation.Add, bounds, o))
+        {
+          case SelectionAction.Add:
+            tool.Add(o);
+            break;
+          case SelectionAction.Remove:
+          case SelectionAction.DoNothing:
+          default:
+            break;
+        }
+      }
+    }
   }
 }
