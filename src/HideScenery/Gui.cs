@@ -20,8 +20,8 @@ namespace Craxy.Parkitect.HideScenery
     private const float right = 10.0f;
     private const float top = 75.0f;
     private const float padding = 5.0f;
-    private const float hIndentation = 15.0f;
-    private const float vIndentation = 15.0f;
+    private const float hIndentation = 12.0f;
+    private const float vIndentation = 12.0f;
     private static void hIndent() => Space(hIndentation);
     private static void vIndent() => Space(vIndentation);
 
@@ -249,36 +249,31 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    private static void ShowBoxOptions(float indentation, Handler hs)
+    private static void ShowAdvancedOptions(float indentation, AdvancedOptions options)
     {
-      var options = hs.Options.BoxOptions;
-
-      using (Layout.HorizontalIndentation(indentation))
-      {
-        Label("Box selection options:");
-      }
-      indentation += hIndentation;
-      using (Layout.HorizontalIndentation(indentation))
+      using(Layout.HorizontalIndentation(indentation))
       {
         options.ApplyFiltersOnAddOnly = Toggle(options.ApplyFiltersOnAddOnly, "Apply filters only when hiding");
       }
-      using (Layout.HorizontalIndentation(indentation))
+      using(Layout.HorizontalIndentation(indentation))
+      {
+        options.OnlyMatchCompletelyInBounds = Toggle(options.OnlyMatchCompletelyInBounds, "Only match completely in bounds");
+      }
+      using(Layout.HorizontalIndentation(indentation))
       {
         options.HidePaths = Toggle(options.HidePaths, "Hide paths");
         FlexibleSpace();
         options.HideScenery = Toggle(options.HideScenery, "Hide scenery");
-        Space(10.0f);
+        FlexibleSpace();
       }
-      if (options.HideScenery)
+      if(options.HideScenery)
       {
-        // Scenery types
+        using(Layout.HorizontalIndentation(indentation))
         {
-          using (Layout.HorizontalIndentation(indentation))
-          {
-            Label("Scenery types:");
-          }
-          indentation += hIndentation;
-
+          Label("Scenery types:");
+        }
+        indentation += hIndentation;
+        {
           var sceneryToHide = options.SceneryToHide;
           void ShowSceneryToHide(SceneryType st, string name)
           {
@@ -294,19 +289,20 @@ namespace Craxy.Parkitect.HideScenery
           }
 
           ShowSceneryToHide(SceneryType.Wall, "walls");
-          if (sceneryToHide.HasSet(SceneryType.Wall))
+          if(sceneryToHide.HasSet(SceneryType.Wall))
           {
             indentation += hIndentation;
+            var wallOptions = options.WallOptions;
 
-            using (Layout.HorizontalIndentation(indentation))
+            using(Layout.HorizontalIndentation(indentation))
             {
-              options.WallOptions.OnlyMatchExactlyInBounds = Toggle(options.WallOptions.OnlyMatchExactlyInBounds, "Find only exactly in bounds");
+              wallOptions.OnlyMatchCompletelyInBounds = ShowValueDropDown("Only completely in bounds", wallOptions.OnlyMatchCompletelyInBounds);
             }
-            using (Layout.HorizontalIndentation(indentation))
+            using(Layout.HorizontalIndentation(indentation))
             {
-              options.WallOptions.HideOnlyFacingCurrentView = Toggle(options.WallOptions.HideOnlyFacingCurrentView, "Hide only walls facing view");
+              wallOptions.HideOnlyFacingCurrentView = Toggle(wallOptions.HideOnlyFacingCurrentView, "Hide only walls facing view");
             }
-            if (options.WallOptions.HideOnlyFacingCurrentView)
+            if(wallOptions.HideOnlyFacingCurrentView)
             {
               using (Layout.HorizontalIndentation(indentation))
               {
@@ -316,84 +312,64 @@ namespace Craxy.Parkitect.HideScenery
 
             indentation -= hIndentation;
           }
-          ShowSceneryToHide(SceneryType.Roof, "roofs");
-          ShowSceneryToHide(SceneryType.Other, "everything else");
-          options.SceneryToHide = sceneryToHide;
 
-          indentation -= hIndentation;
+          ShowSceneryToHide(SceneryType.Roof, "roofs");
+          if(sceneryToHide.HasSet(SceneryType.Roof))
+          {
+            indentation += hIndentation;
+            var roofOptions = options.RoofOptions;
+
+            using(Layout.HorizontalIndentation(indentation))
+            {
+              roofOptions.OnlyMatchCompletelyInBounds = ShowValueDropDown("Only completely in bounds", roofOptions.OnlyMatchCompletelyInBounds);
+            }
+
+            indentation -= hIndentation;
+          }
+          ShowSceneryToHide(SceneryType.Other, "everything else");
+          if(sceneryToHide.HasSet(SceneryType.Other))
+          {
+            indentation += hIndentation;
+            var otherOptions = options.OtherSceneryOptions;
+
+            using(Layout.HorizontalIndentation(indentation))
+            {
+              otherOptions.OnlyMatchCompletelyInBounds = ShowValueDropDown("Only completely in bounds", otherOptions.OnlyMatchCompletelyInBounds);
+            }
+
+            indentation -= hIndentation;
+          }
+          options.SceneryToHide = sceneryToHide;
         }
       }
     }
 
+    private static void ShowBoxOptions(float indentation, Handler hs)
+    {
+      using (Layout.HorizontalIndentation(indentation))
+      {
+        Label("Box selection options:");
+      }
+      ShowAdvancedOptions(indentation + hIndentation, hs.Options.BoxOptions);
+    }
+
     private void ShowHideAboveHeightOptions(float indentation, Handler hs)
     {
-      var options = hs.Options.HideAboveHeightOptions;
-
       using(Layout.HorizontalIndentation(indentation))
       {
         Label("Hide above Height options:");
       }
-      indentation += hIndentation;
-      using(Layout.HorizontalIndentation(indentation))
+      ShowAdvancedOptions(indentation + hIndentation, hs.Options.HideAboveHeightOptions);
+    }
+
+    private static Value ShowValueDropDown(string label, Value value)
+    {
+      using(Layout.Horizontal())
       {
-        options.HidePaths = Toggle(options.HidePaths, "Hide paths");
-        FlexibleSpace();
-        options.HideScenery = Toggle(options.HideScenery, "Hide scenery");
-        Space(10.0f);
-      }
-      if (options.HideScenery)
-      {
-        // Scenery types
-        {
-          using (Layout.HorizontalIndentation(indentation))
-          {
-            Label("Scenery types:");
-          }
-          indentation += hIndentation;
-
-          var sceneryToHide = options.SceneryToHide;
-          void ShowSceneryToHide(SceneryType st, string name)
-          {
-            using (Layout.HorizontalIndentation(indentation))
-            {
-              var isSet = sceneryToHide.HasSet(st);
-              var newSet = Toggle(isSet, name);
-              if (isSet != newSet)
-              {
-                sceneryToHide = sceneryToHide.Set(st, newSet);
-              }
-            }
-          }
-
-          ShowSceneryToHide(SceneryType.Wall, "walls");
-          if (sceneryToHide.HasSet(SceneryType.Wall))
-          {
-            indentation += hIndentation;
-
-            using (Layout.HorizontalIndentation(indentation))
-            {
-              options.WallOptions.OnlyMatchExactlyInBounds = Toggle(options.WallOptions.OnlyMatchExactlyInBounds, "Find only exactly in bounds");
-            }
-            using (Layout.HorizontalIndentation(indentation))
-            {
-              options.WallOptions.HideOnlyFacingCurrentView = Toggle(options.WallOptions.HideOnlyFacingCurrentView, "Hide only walls facing view");
-            }
-            if (options.WallOptions.HideOnlyFacingCurrentView)
-            {
-              using (Layout.HorizontalIndentation(indentation))
-              {
-                options.WallOptions.UpdateNotFacingCurrentView = Toggle(options.WallOptions.UpdateNotFacingCurrentView, "Update walls not facing view");
-              }
-            }
-
-            indentation -= hIndentation;
-          }
-          ShowSceneryToHide(SceneryType.Roof, "roofs");
-          ShowSceneryToHide(SceneryType.Other, "everything else");
-          options.SceneryToHide = sceneryToHide;
-
-          indentation -= hIndentation;
-        }
+        Label(label);
+        Space(2.0f);
+        var name = RapidGUI.RGUI.SelectionPopup(value.Name(), ValueExtensions.Names);
+        return name == value.Name() ? value : (Value)Array.IndexOf(ValueExtensions.Names, name);
       }
     }
 
@@ -469,7 +445,6 @@ namespace Craxy.Parkitect.HideScenery
       }
 
       private readonly StringBuilder sb = new();
-
       private string GetTooltip(Handler hs, BuildableObject o)
       {
         void indent(int indentation) => sb.Append(' ', indentation * 2);

@@ -89,6 +89,7 @@ namespace Craxy.Parkitect.HideScenery
   internal abstract class AdvancedOptions
   {
     public bool ApplyFiltersOnAddOnly = true;
+    public bool OnlyMatchCompletelyInBounds = true;
 
     public bool HidePaths = true;
     public bool HideScenery = true;
@@ -97,13 +98,19 @@ namespace Craxy.Parkitect.HideScenery
     public RoofOptions RoofOptions = new()
     {
       HideBy = HideType.All,
+      OnlyMatchCompletelyInBounds = Value.Inherit,
     };
     public WallOptions WallOptions = new()
     {
       HideBy = HideType.All,
-      OnlyMatchExactlyInBounds = true,
+      OnlyMatchCompletelyInBounds = Value.Inherit,
       HideOnlyFacingCurrentView = false,
       UpdateNotFacingCurrentView = true,
+    };
+
+    public OtherSceneryOptions OtherSceneryOptions = new()
+    {
+      OnlyMatchCompletelyInBounds = Value.Inherit,
     };
   }
 
@@ -112,17 +119,35 @@ namespace Craxy.Parkitect.HideScenery
   internal sealed class RoofOptions
   {
     public HideType HideBy = HideType.All;  // cannot be class
+    public Value OnlyMatchCompletelyInBounds = Value.Inherit;
   }
   internal sealed class WallOptions
   {
     public HideType HideBy = HideType.All;
-    public bool OnlyMatchExactlyInBounds = false;
+    public Value OnlyMatchCompletelyInBounds = Value.Inherit;
     public bool HideOnlyFacingCurrentView = false;
     public bool UpdateNotFacingCurrentView = true;
+  }
+  internal sealed class OtherSceneryOptions
+  {
+    public Value OnlyMatchCompletelyInBounds = Value.Inherit;
   }
 
   internal sealed class HideAboveHeightOptions : AdvancedOptions
   {
     public float Height = 4.1f;
+  }
+
+  internal enum Value : byte
+  {
+    Inherit = 0,
+    True = 1,
+    False = 2,
+  }
+  internal static class ValueExtensions
+  {
+    public static readonly string[] Names = new [] { "Inherit", "✓", "✗" };
+    public static string Name(this Value value)
+      => Names[(int)value];
   }
 }
