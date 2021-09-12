@@ -8,9 +8,9 @@ Tested with Parkitect 1.7u2
    * Two modes for `in bounds`:
      * `Exact`: Objects mut be completely in bounds
      * `Approximately`: Objects can slightly stick out of selection area.
-       * Useful for walls and roof that often reach into neighboring tiles and height levels
+       * Useful for walls and roofs that often reach into neighboring tiles and height levels
 * Update UI:
-  * Window side adjusts to content
+  * Window height adjusts to content
   * Window can be moved
   * Options can be expanded and collapsed
 * Publish Licenses of 3rd party libraries with Mod (file `LICENSE`)
