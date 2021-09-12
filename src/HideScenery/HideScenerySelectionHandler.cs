@@ -12,7 +12,6 @@ namespace Craxy.Parkitect.HideScenery
     internal Calc calc;
     public int NumberOfHiddenObjects => tool.NumberOfSelectedObjects;
     public readonly Options Options = new();
-    private readonly Gui gui = new();
     private Park park;
     public bool ShowGui = true;
 
@@ -38,15 +37,16 @@ namespace Craxy.Parkitect.HideScenery
       tool.CalcIndividualVisibility = calc.BuildableObjectVisibility;
       tool.CalcBoxAction = calc.BoxAction;
     }
+    private UI.InGame.MainWindow ui;
     private void OnGUI()
     {
       if(ShowGui)
       {
-        gui.Show(this);
+        (ui ??= new UI.InGame.MainWindow(this)).Show();
       }
       else
       {
-        gui.ShowIndicator();
+        UI.InGame.Indicator.Show();
       }
     }
     private void OnDisable()
@@ -156,7 +156,7 @@ namespace Craxy.Parkitect.HideScenery
         return;
       }
 
-      Mod.DebugLog($"OnAdd: {o.GetType().Name} -- {o.getName()}");
+      // Mod.DebugLog($"OnAdd: {o.GetType().Name} -- {o.getName()}");
 
       o.retrieveObjectsBelongingToThis(selectedObjectBuffer);
       foreach (var c in selectedObjectBuffer)
@@ -172,7 +172,8 @@ namespace Craxy.Parkitect.HideScenery
         return;
       }
 
-      Mod.DebugLog($"OnRemove: {o.GetType().Name} -- {o.getName()}");
+      // Mod.DebugLog($"OnRemove: {o.GetType().Name} -- {o.getName()}");
+
       o.retrieveObjectsBelongingToThis(selectedObjectBuffer);
       foreach (var c in selectedObjectBuffer)
       {
@@ -223,13 +224,21 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    public void HideSceneryAbove(float height)
+    public void SceneryAbove(float height, SelectionOperation op)
     {
-      var mc = MouseCollisions.Instance;
-
       var bounds = new Bounds();
       bounds.SetMinMax(new Vector3(0.0f, height, 0.0f), new Vector3(Park.MAX_SIZE, 10_000.0f, Park.MAX_SIZE));
-      Mod.DebugLog($"Bounds: {bounds}");
+      SceneryInside(bounds, op);
+    }
+    public void SceneryBelow(float height, SelectionOperation op)
+    {
+      var bounds = new Bounds();
+      bounds.SetMinMax(new Vector3(0.0f, -10_000.0f, 0.0f), new Vector3(Park.MAX_SIZE, height, Park.MAX_SIZE));
+      SceneryInside(bounds, op);
+    }
+    public void SceneryInside(Bounds bounds, SelectionOperation op)
+    {
+      var mc = MouseCollisions.Instance;
 
       //todo: cache?
       var results = new List<MouseCollider>();
@@ -238,12 +247,14 @@ namespace Craxy.Parkitect.HideScenery
       foreach (var coll in results)
       {
         var o = coll.buildableObject;
-        switch (calc.HideAboveHeightAction(SelectionOperation.Add, bounds, o))
+        switch (calc.HideSceneryInBoundsAction(op, bounds, o))
         {
           case SelectionAction.Add:
             tool.Add(o);
             break;
           case SelectionAction.Remove:
+            tool.Remove(o);
+            break;
           case SelectionAction.DoNothing:
           default:
             break;

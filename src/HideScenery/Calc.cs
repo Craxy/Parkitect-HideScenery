@@ -74,7 +74,7 @@ namespace Craxy.Parkitect.HideScenery
       return Action(op, bounds, o, handler.Options.BoxOptions);
     }
 
-    private SelectionAction Action(SelectionOperation op, Bounds bounds, BuildableObject o, AdvancedOptions options)
+    public SelectionAction Action(SelectionOperation op, Bounds bounds, BuildableObject o, AdvancedOptions options)
     {
       if (o.isPreview)
       {
@@ -115,7 +115,7 @@ namespace Craxy.Parkitect.HideScenery
     {
       Debug.Assert(IsDeco(o));
 
-      if(park.hideSceneryEnabled)
+      if (park.hideSceneryEnabled)
       {
         return DoNothing;
       }
@@ -129,14 +129,19 @@ namespace Craxy.Parkitect.HideScenery
       }
 
       var sceneryType = CalcSceneryType(o);
-      if(!options.SceneryToHide.HasSet(sceneryType))
+      if (!options.SceneryToHide.HasSet(sceneryType))
       {
         return DoNothing;
       }
 
-      if(RequiresCompletelyInBounds(sceneryType, options))
+      if (RequiresCompletelyInBounds(sceneryType, options))
       {
-        if(!IsCompletelyInBounds(o, bounds))
+        var boundsOptions = sceneryType switch {
+          SceneryType.Wall => options.WallOptions.BoundsOptions,
+          SceneryType.Roof => options.RoofOptions.BoundsOptions,
+          _ => options.OtherSceneryOptions.BoundsOptions,
+        };
+        if (!IsCompletelyInBounds(o, bounds, new(options.BoundsOptions, boundsOptions)))
         {
           return DoNothing;
         }
@@ -149,63 +154,18 @@ namespace Craxy.Parkitect.HideScenery
       };
     }
     private bool RequiresCompletelyInBounds(SceneryType sceneryType, AdvancedOptions options)
-    {
-      bool RequiresExactlyInBoundsWithFallback(Value value) => value switch
+      => sceneryType switch
       {
-        Value.True => true,
-        Value.False => false,
-        _ => options.OnlyMatchCompletelyInBounds,
+        SceneryType.Wall => options.WallOptions.BoundsOptions.OnlyMatchCompletelyInBounds.Or(options.BoundsOptions.OnlyMatchCompletelyInBounds),
+        SceneryType.Roof => options.RoofOptions.BoundsOptions.OnlyMatchCompletelyInBounds.Or(options.BoundsOptions.OnlyMatchCompletelyInBounds),
+        SceneryType.Other => options.OtherSceneryOptions.BoundsOptions.OnlyMatchCompletelyInBounds.Or(options.BoundsOptions.OnlyMatchCompletelyInBounds),
+        _ => options.BoundsOptions.OnlyMatchCompletelyInBounds,
       };
-
-      return sceneryType switch
-      {
-        SceneryType.Wall => RequiresExactlyInBoundsWithFallback(options.WallOptions.OnlyMatchCompletelyInBounds),
-        SceneryType.Roof => RequiresExactlyInBoundsWithFallback(options.RoofOptions.OnlyMatchCompletelyInBounds),
-        SceneryType.Other => RequiresExactlyInBoundsWithFallback(options.OtherSceneryOptions.OnlyMatchCompletelyInBounds),
-        _ => options.OnlyMatchCompletelyInBounds,
-      };
-    }
     private SelectionAction WallAction(SelectionOperation op, Bounds bounds, BuildableObject o, WallOptions options)
     {
       Debug.Assert(CalcSceneryType(o) == SceneryType.Wall);
 
-      if(options.OnlyMatchCompletelyInBounds == Value.True)
-      {
-        if(IsCompletelyInBounds(o, bounds))
-        {
-          return CalcAddRemove(op, o);
-        }
-        else
-        {
-          return DoNothing;
-        }
-      }
-
-      if(options.OnlyMatchCompletelyInBounds == Value.True)
-      {
-        switch (o)
-        {
-          case Wall wall:
-            bool IsInBounds(Bounds b)
-            {
-              // bounds.Contains(o.transform.position);
-              // ^^^
-              // this only checks one point (bottom center)
-
-              var wallHeightBounds = new Bounds();
-              var pos = wall.transform.position;
-              wallHeightBounds.SetMinMax(pos, pos + new Vector3(0.0f, wall.height, 0.0f));
-
-              return b.Intersects(wallHeightBounds);
-            }
-            if(!IsInBounds(bounds))
-            {
-              return DoNothing;
-            }
-            break;
-        }
-      }
-
+      // bounds already checked in `DecoAction`
       if (options.HideOnlyFacingCurrentView)
       {
         switch (o)
@@ -241,20 +201,23 @@ namespace Craxy.Parkitect.HideScenery
       }
     }
 
-    public SelectionAction HideAboveHeightAction(SelectionOperation op, Bounds bounds, BuildableObject o)
+    public SelectionAction HideSceneryInBoundsAction(SelectionOperation op, Bounds bounds, BuildableObject o)
     {
-      return Action(op, bounds, o, handler.Options.HideAboveHeightOptions);
+      return Action(op, bounds, o, handler.Options.HideInBoundsOptions);
     }
 
-    private bool IsCompletelyInBounds(BuildableObject o, Bounds bounds)
+    private bool IsCompletelyInBounds(BuildableObject o, Bounds bounds, ResolvedBoundsOptions boundsOptions)
     {
       foreach (var coll in o.mouseColliders)
       {
         var collBounds = coll.oldBounds;
         Debug.Assert(collBounds != new Bounds());
-        if(!bounds.ContainsCompletely(collBounds))
+        switch (boundsOptions.Precision)
         {
-          return false;
+          case Precision.Exact when !bounds.ContainsCompletely(collBounds):
+            return false;
+          case Precision.Approximately when !bounds.ContainsCompletelyApproximately(collBounds, boundsOptions.Epsilon):
+            return false;
         }
       }
       return true;

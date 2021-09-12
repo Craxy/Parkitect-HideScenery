@@ -35,7 +35,7 @@ namespace Craxy.Parkitect.HideScenery
 
     public readonly BoxOptions BoxOptions = new();
 
-    public readonly HideAboveHeightOptions HideAboveHeightOptions = new();
+    public readonly HideInBoundsOptions HideInBoundsOptions = new();
 
     public delegate void PropertyChanged(Options options, string property);
     public event PropertyChanged Changed;
@@ -47,7 +47,7 @@ namespace Craxy.Parkitect.HideScenery
     Roof = 1 << 0,
     Wall = 1 << 1,
     Other = 1 << 2,
-    All = ~0,
+    All = Roof | Wall | Other,
   }
   [Flags]
   internal enum HideType
@@ -55,7 +55,7 @@ namespace Craxy.Parkitect.HideScenery
     Name = 1 << 0,
     Category = 1 << 1,
     Class = 1 << 2,
-    All = ~0,
+    All = Name | Category | Class,
   }
   internal static class TypeExtensions
   {
@@ -89,7 +89,11 @@ namespace Craxy.Parkitect.HideScenery
   internal abstract class AdvancedOptions
   {
     public bool ApplyFiltersOnAddOnly = true;
-    public bool OnlyMatchCompletelyInBounds = true;
+    public BoundsOptions BoundsOptions = new() {
+      OnlyMatchCompletelyInBounds = true,
+      Precision = Precision.Approximately,
+      Epsilon = 0.05f,
+    };
 
     public bool HidePaths = true;
     public bool HideScenery = true;
@@ -98,19 +102,19 @@ namespace Craxy.Parkitect.HideScenery
     public RoofOptions RoofOptions = new()
     {
       HideBy = HideType.All,
-      OnlyMatchCompletelyInBounds = Value.Inherit,
+      BoundsOptions = new (),
     };
     public WallOptions WallOptions = new()
     {
       HideBy = HideType.All,
-      OnlyMatchCompletelyInBounds = Value.Inherit,
+      BoundsOptions = new (),
       HideOnlyFacingCurrentView = false,
       UpdateNotFacingCurrentView = true,
     };
 
     public OtherSceneryOptions OtherSceneryOptions = new()
     {
-      OnlyMatchCompletelyInBounds = Value.Inherit,
+      BoundsOptions = new (),
     };
   }
 
@@ -119,35 +123,112 @@ namespace Craxy.Parkitect.HideScenery
   internal sealed class RoofOptions
   {
     public HideType HideBy = HideType.All;  // cannot be class
-    public Value OnlyMatchCompletelyInBounds = Value.Inherit;
+    public MaybeInheritedBoundsOptions BoundsOptions = new ();
   }
   internal sealed class WallOptions
   {
     public HideType HideBy = HideType.All;
-    public Value OnlyMatchCompletelyInBounds = Value.Inherit;
+    public MaybeInheritedBoundsOptions BoundsOptions = new ();
     public bool HideOnlyFacingCurrentView = false;
     public bool UpdateNotFacingCurrentView = true;
   }
   internal sealed class OtherSceneryOptions
   {
-    public Value OnlyMatchCompletelyInBounds = Value.Inherit;
+    public MaybeInheritedBoundsOptions BoundsOptions = new ();
   }
 
-  internal sealed class HideAboveHeightOptions : AdvancedOptions
+  internal sealed class HideInBoundsOptions : AdvancedOptions
   {
-    public float Height = 4.1f;
+    public float Height = 4.0f;
   }
 
-  internal enum Value : byte
+  internal sealed class BoundsOptions
   {
-    Inherit = 0,
-    True = 1,
-    False = 2,
+    public bool OnlyMatchCompletelyInBounds = true;
+    public Precision Precision = HideScenery.Precision.Approximately;
+    public float Epsilon = 0.05f;
+    //todo: limit direction (x,y,both)? -> disable x for box selection?
   }
-  internal static class ValueExtensions
+  internal sealed class MaybeInheritedBoundsOptions
   {
-    public static readonly string[] Names = new [] { "Inherit", "✓", "✗" };
-    public static string Name(this Value value)
-      => Names[(int)value];
+    public MaybeInherit<bool> OnlyMatchCompletelyInBounds = default;
+    public MaybeInherit<Precision> Precision = default;
+    public MaybeInherit<float> Epsilon = default;
+
+    public bool AllInherited
+      =>
+        OnlyMatchCompletelyInBounds.IsInherited
+        && Precision.IsInherited
+        && Epsilon.IsInherited
+      ;
+  }
+  internal struct ResolvedBoundsOptions
+  {
+    readonly BoundsOptions Root;
+    readonly MaybeInheritedBoundsOptions MaybeInherited;
+    //todo: allow chaining? root -> maybe inherited -> maybe inherited -> ... -> maybe inherited
+    public ResolvedBoundsOptions(BoundsOptions root, MaybeInheritedBoundsOptions maybeInherited)
+    {
+      Root = root;
+      MaybeInherited = maybeInherited;
+    }
+
+    public bool OnlyMatchCompletelyInBounds => MaybeInherited.OnlyMatchCompletelyInBounds.Or(Root.OnlyMatchCompletelyInBounds);
+    public Precision Precision => MaybeInherited.Precision.Or(Root.Precision);
+    public float Epsilon => MaybeInherited.Epsilon.Or(Root.Epsilon);
+  }
+
+  /*
+    type MaybeInherit =
+      | Value of 'T
+      | Inherit
+  */
+  internal readonly struct MaybeInherit<T>
+  {
+    // hasValue instead of inherit: default (false) is inherit
+    private readonly bool hasValue;
+    private readonly T value;
+
+    public MaybeInherit(T value)
+    {
+      hasValue = true;
+      this.value = value;
+    }
+    public MaybeInherit()
+    {
+      hasValue = false;
+      value = default;
+    }
+
+    public bool IsInherited => !hasValue;
+    public bool HasValue => hasValue;
+    public T ForceValue => value;
+  }
+  internal static class MaybeInherit
+  {
+    internal static MaybeInherit<T> Inherit<T>() => new ();
+    internal static MaybeInherit<T> Value<T>(T value) => new (value);
+    internal static bool TryGetValue<T>(this in MaybeInherit<T> mi, out T value)
+    {
+      if(mi.IsInherited)
+      {
+        value = default;
+        return false;
+      }
+      else
+      {
+        value = mi.ForceValue;
+        return true;
+      }
+    }
+
+    internal static T Or<T>(this in MaybeInherit<T> mi, T root)
+      => mi.IsInherited ? root : mi.ForceValue;
+  }
+
+  internal enum Precision
+  {
+    Exact,
+    Approximately,
   }
 }
